@@ -192,6 +192,8 @@ class URL {
     this.params  = new Parameters(this.location);
     this.hash    = new Hash(this.location);
     this.isMatch = this.params.__isMatch;
+
+    return this;
   }
 
   toString() {
