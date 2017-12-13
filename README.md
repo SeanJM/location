@@ -38,6 +38,23 @@ url.toString();
 -> "http://localhost:3000/path/name?string=1"
 ```
 
+##### `URL.prototype.test`
+
+```javascript
+const url = new URL("/language/:lang");
+url.test("/lang/english")     -> false
+url.test("/language/english") -> true
+```
+
+```javascript
+let url = new URL({ href: "http://localhost:3000/?string" });
+url.set({
+  pathname : "/path/name"
+});
+url.toString();
+-> "http://localhost:3000/path/name?string=1"
+```
+
 
 #### Params
 
