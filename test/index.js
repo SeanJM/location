@@ -918,5 +918,17 @@ tinytest(function (test, load) {
       ];
     });
 
+  test("/location/:lang match method")
+    .this(function () {
+      let url  = new URL("/location/:lang");
+      return [
+        url.test("/location/english"),
+        url.test("/loc/english")
+      ];
+    })
+    .isDeepEqual(function () {
+      return [ true, false ];
+    });
+
   load();
 });

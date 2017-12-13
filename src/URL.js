@@ -36,6 +36,10 @@ class URL {
     this.isMatch = this.params.isMatch;
   }
 
+  test(location) {
+    return new URL(this.location.href, location).isMatch;
+  }
+
   getLocationString(loc) {
     return loc && (loc.href || loc.pathname || loc.origin);
   }
