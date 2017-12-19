@@ -1,47 +1,59 @@
-const Origin     = require("./Origin");
-const Search     = require("./Search");
-const Parameters = require("./Parameters");
-const Hash       = require("./Hash");
+import Origin     from "./Origin";
+import Search     from "./Search";
+import Parameters from "./Parameters";
+import Hash       from "./Hash";
 
-class URL {
-  constructor(a, b) {
-    const params   = (
-      typeof a === "string"
-        ? a
-        : undefined
+export default class URL {
+  constructor(schema, location) {
+    this.setSchema(schema);
+    this.setLocation(location);
+
+    this.origin  = new Origin(this.schema, this.location);
+    this.search  = new Search(this.schema, this.location);
+    this.params  = new Parameters(this.schema, this.location);
+    this.hash    = new Hash(this.schema, this.location);
+
+    this.isMatch = (
+      this.origin.isMatch &&
+      this.search.isMatch &&
+      this.params.isMatch &&
+      this.hash.isMatch
     );
-
-    const loc      = (
-      typeof a === "object"
-        ? a
-        : typeof b === "string"
-          ? { href: b }
-          : b
-    );
-
-    this.location = {
-      origin       : this.getUrlOrigin(params, loc),
-      href         : this.getUrlHref(params, loc),
-      pathname     : this.getUrlPathname(params, loc),
-      hash         : this.getUrlHash(params, loc),
-      params       : this.getUrlPathname(params || this.getLocationString(loc)),
-      search       : this.getUrlSearch(params, loc),
-      searchSchema : this.getUrlSearch(params)
-    };
-
-    this.origin  = new Origin(this.location);
-    this.search  = new Search(this.location);
-    this.params  = new Parameters(this.location);
-    this.hash    = new Hash(this.location);
-    this.isMatch = this.params.isMatch;
   }
 
   test(location) {
-    return new URL(this.location.href, location).isMatch;
+    return new URL(this.arguments.schema, location).isMatch;
   }
 
-  getLocationString(loc) {
-    return loc && (loc.href || loc.pathname || loc.origin);
+  setLocation(location) {
+    this.location = {
+      value    : location,
+      origin   : this.getUrlOrigin(location),
+      href     : this.getUrlHref(location),
+      pathname : this.getUrlPathname(location),
+      hash     : this.getUrlHash(location),
+      search   : this.getUrlSearch(location)
+    };
+    return this;
+  }
+
+  setSchema(schema) {
+    this.schema = {
+      value    : schema,
+      origin   : this.getUrlOrigin(schema),
+      href     : this.getUrlHref(schema),
+      pathname : this.getUrlPathname(schema),
+      hash     : this.getUrlHash(schema),
+      search   : this.getUrlSearch(schema)
+    };
+    return this;
+  }
+
+  getLocationString(location) {
+    return (
+      location &&
+      (location.href || location.pathname || location.origin)
+    );
   }
 
   getUrlHash(params, loc) {
@@ -93,37 +105,29 @@ class URL {
     return start === -1 ? "/" : string.substring(start, end);
   }
 
-  getUrlOrigin(params, loc) {
+  getUrlOrigin(location) {
     let origin = undefined;
     let end;
 
-    if (typeof loc === "object") {
-      return this.getUrlOrigin(loc.origin || loc.href || loc.pathname);
-    } else if (params && params.indexOf("http") === 0) {
-      params = params.split("?")[0];
-      end    = params.indexOf("/", params.indexOf("//") + 2);
-      origin = params.substring(0, end > -1 ? end : params.length);
+    if (typeof location === "object") {
+      return this.getUrlOrigin(location.origin || location.href);
+    } else if (location && location.indexOf("http") === 0) {
+      location = location.split("?")[0];
+      end      = location.indexOf("/", location.indexOf("//") + 2);
+      origin   = location.substring(0, end > -1 ? end : location.length);
     }
 
     return origin;
   }
 
-  getUrlSearch(params, loc) {
-    if (typeof loc === "object") {
-      return loc.search ? loc.search : this.getUrlSearch(loc.href);
-    } else if (params) {
-      return params.split("?")[1] ? "?" + params.split("?")[1] : "";
+  getUrlSearch(location) {
+    if (typeof location === "object") {
+      return location.search ? location.search : this.getUrlSearch(location.href);
+    } else if (location) {
+      return location.split("?")[1] ? "?" + location.split("?")[1] : "";
     }
 
     return "";
-  }
-
-  setSchema(params) {
-    Object.assign(this, new URL(params, {
-      pathname: this.__pathname,
-      search  : this.__search
-    }));
-    return this;
   }
 
   locationFromString(string) {
@@ -142,7 +146,7 @@ class URL {
   }
 
   copy() {
-    let x = new URL(this.__params, this.location);
+    let x = new URL(this.params.value, this.location.value);
 
     for (var k in this.search) {
       if (this.search.hasOwnProperty(k)) {
@@ -209,5 +213,3 @@ class URL {
     );
   }
 }
-
-export default URL;
