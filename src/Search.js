@@ -130,21 +130,35 @@ export default class Search {
   setValue(search) {
     this.searchEach(search, props => {
       const ref = this.schema[props.key];
-      if (props.value && ref) {
-        if (ref.map.length) {
-          this[props.key] = {};
+      if (ref && ref.map.length) {
+        this[props.key] = (
+          props.type === "object"
+            ? {}
+            : (this[props.key] || [])
+        );
+
+        if (ref.delimiter) {
           props.value
             .split(ref.delimiter)
             .forEach((value, i) => {
-              this[ref.map[i]] = valueByType(value);
+              this[props.key][ref.map[i]] = valueByType(value);
             });
         } else if (props.type === "array") {
+          this[props.key].push({
+            [ref.map[0]] : props.value
+          });
+        } else {
+          this[props.key][ref.map[0]] = props.value;
+        }
+      } else {
+        if (!ref) {
+          this.isMatch = false;
+        }
+        if (props.type === "array") {
           this[props.key] = (this[props.key] || []).concat(props.value);
         } else {
           this[props.key] = props.value;
         }
-      } else {
-        this.isMatch = false;
       }
     });
   }
