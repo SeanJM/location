@@ -2,7 +2,7 @@ const clear = require("./clear");
 
 const reserved = {
   schema     : true,
-  keys : true,
+  keys       : true,
   toString   : true,
   getSchema  : true,
   fromString : true,
@@ -17,115 +17,6 @@ function valueByType(str) {
 
 // ?this=value&that[]=a&that[]=b
 // ?this=:key+:property
-
-export default function Search(schema, location) {
-  const search = schema.search[0] === "?"
-    ? schema.search.slice(1)
-    : schema.search;
-
-  const split = search.split("&").filter(a => a.length);
-
-  this.schema = {};
-  this.keys   = [];
-
-  split.forEach(str => {
-    let element = str.split("=");
-    let isArray = element[0].slice(-2) === "[]";
-
-    let value = {
-      delimiter : element && element.indexOf(",") > -1 ? "," : "+",
-      type      : isArray ? "array" : "object",
-      map       : []
-    };
-
-    if (element[1]) {
-      element[1].split(value.delimiter).forEach(name => {
-        if (name[0] === ":") {
-          value.map.push(name.substring(1));
-        } else {
-          value.map.push({ constant : name });
-        }
-      });
-    }
-
-    element[0] = isArray
-      ? element[0].slice(0, -2)
-      : element[0];
-
-    if (this.keys.indexOf(element[0]) === -1) {
-      this.keys.push(element[0]);
-    }
-
-    this.schema[element[0]] = value;
-  });
-
-  this.fromString(schema.search);
-}
-
-function getType(element, type) {
-}
-
-Search.prototype.fromString = function (search) {
-  const list = search && search.length
-    ? search.replace(/^\?/, "").split("&")
-    : [];
-
-  let t = {};
-
-  for (let i = 0, n = list.length; i < n; i++) {
-    list[i]    = list[i].split("=").map(decodeURI);
-    t.isArray  = list[i][0].slice(-2) === "[]";
-    list[i][1] = list[i][1] || 1;
-
-    if (t.isArray) {
-      list[i][0]       = list[i][0].slice(0, -2);
-      this[list[i][0]] = this[list[i][0]] || [];
-    }
-
-    t.schema   = this.schema[list[i][0]];
-    t.isSchema = t.schema && t.schema.map.length;
-
-    if (t.isSchema) {
-      t.split = list[i][1].split(t.schema.delimiter);
-      t.value = {};
-
-      for (var x = 0, y = t.split.length; x < y; x++) {
-        t.key = t.schema.map[x];
-        if (t.key) {
-          if (t.key.constant) {
-            t.value[t.key.constant] = t.key.constant;
-          } else {
-            t.value[t.key] = valueByType(t.split[x]);
-          }
-        } else {
-          t.value.__invalid = true;
-        }
-      }
-
-      if (t.schema.type === "array") {
-        this[list[i][0]].push(t.value);
-      } else {
-        this[list[i][0]] = t.value;
-      }
-    } else if (t.isArray) {
-      this[list[i][0]].push(
-        valueByType(list[i][1])
-      );
-    } else {
-      this[list[i][0]] = valueByType(list[i][1]);
-    }
-  }
-
-  for (var i = 0, n = this.keys.length; i < n; i++) {
-    if (typeof this[this.keys[i]] === "undefined") {
-      if (this.schema[this.keys[i]].type === "array") {
-        this[this.keys[i]] = [];
-      } else if (this.schema[this.keys[i]].type === "object") {
-        this[this.keys[i]] = {};
-      }
-    }
-  }
-};
 
 function schemaArrayToString(key, value, schema) {
   let t = [];
@@ -163,63 +54,134 @@ function schemaObjectToString(key, value, schema) {
   );
 }
 
-Search.prototype.toString = function () {
-  const search = [];
+export default class Search {
+  constructor(schema, location) {
+    this.isMatch  = true;
+    this.schema   = {};
+    this.keys     = [];
 
-  for (let k in this) {
-    if (this.hasOwnProperty(k) && !reserved[k]) {
-      if (this.schema[k] && this.schema[k].map.length) {
-        if (this.schema[k].type === "array") {
-          search.push(
-            schemaArrayToString(k, this[k], this.schema[k])
-          );
-        } else if (this.schema[k].type === "object") {
-          search.push(
-            schemaObjectToString(k, this[k], this.schema[k])
-          );
-        }
-      } else if (
-        typeof this[k] === "number" ||
-        (typeof this[k] === "string" && this[k].length)
-      ) {
-        search.push(
-          encodeURI(k + "=" + this[k])
-        );
-      } else if (Array.isArray(this[k])) {
-        for (var i = 0, n = this[k].length; i < n; i++) {
-          search.push(
-            encodeURI(k) + "[]=" + encodeURI(this[k][i])
-          );
-        }
+    this.setSchema(schema.search);
+    this.setValue(location.search);
+  }
+
+  searchEach(raw, callback) {
+    if (raw) {
+      let str   = raw[0] === "?" ? raw.slice(1) : raw;
+      let split = str.split("&").filter(a => a.length);
+
+      for (var i = 0, n = split.length; i < n; i++) {
+        let element = split[i].split("=");
+        let isArray = element[0].slice(-2) === "[]";
+
+        element[0] = decodeURI(element[0]);
+        element[1] = decodeURI(element[1]);
+
+        callback({
+          key       : isArray ? element[0].slice(0, -2) : element[0],
+          value     : element[1],
+          delimiter : element[1] && element[1].indexOf(",") > -1 ? "," : "+",
+          type      : isArray ? "array" : "object"
+        });
       }
     }
   }
 
-  return search.length
-    ? "?" + search.join("&")
-    : "";
-};
-
-Search.prototype.set = function (opt) {
-  for (var k in opt) {
-    if (opt.hasOwnProperty(k) && !reserved[k]) {
-      this[k] = opt[k];
-    } else if (reserved[k]) {
-      throw "Invalid property \"" + k + "\", this is a reserved key";
-    }
+  setSchema(schema) {
+    this.searchEach(schema, props => {
+      props.map = [];
+      if (props.value) {
+        props.value.split(props.delimiter).forEach(name => {
+          if (name[0] === ":") {
+            props.map.push(name.substring(1));
+          } else {
+            props.map.push({ constant : name });
+          }
+        });
+      }
+      if (this.keys.indexOf(props.key) === -1) {
+        this.keys.push(props.key);
+      }
+      this.schema[props.key] = props;
+    });
   }
-  return this;
-};
 
-Search.prototype.get = function (key) {
-  let props = {};
-  if (typeof key === "object") {
-    for (var i = 0, n = key.length; i < n; i++) {
-      props[key[i]] = this.get(key[i]);
-    }
-    return props;
+  setValue(search) {
+    this.searchEach(search, props => {
+      const ref = this.schema[props.key];
+      if (props.value && ref) {
+        if (ref.map.length) {
+          this.value[props.key] = {};
+          props.value
+            .split(ref.delimiter)
+            .forEach((value, i) => {
+              this.value[ref.map[i]] = valueByType(value);
+            });
+        } else {
+          this.value[props.key] = valueByType(props.value);
+        }
+      } else {
+        this.isMatch = false;
+      }
+    });
   }
-  return this[typeof this[key] === "function" ? "_" + key : key];
-};
+
+  toString() {
+    const search = [];
+    for (let k in this) {
+      if (this.hasOwnProperty(k) && !reserved[k]) {
+        if (this.schema[k] && this.schema[k].map.length) {
+          if (this.schema[k].type === "array") {
+            search.push(
+              schemaArrayToString(k, this[k], this.schema[k])
+            );
+          } else if (this.schema[k].type === "object") {
+            search.push(
+              schemaObjectToString(k, this[k], this.schema[k])
+            );
+          }
+        } else if (
+          typeof this[k] === "number" ||
+          (typeof this[k] === "string" && this[k].length)
+        ) {
+          search.push(
+            encodeURI(k + "=" + this[k])
+          );
+        } else if (Array.isArray(this[k])) {
+          for (var i = 0, n = this[k].length; i < n; i++) {
+            search.push(
+              encodeURI(k) + "[]=" + encodeURI(this[k][i])
+            );
+          }
+        }
+      }
+    }
+
+    return search.length
+      ? "?" + search.join("&")
+      : "";
+  }
+
+  set(props) {
+    for (var k in props) {
+      if (props.hasOwnProperty(k) && !Search.prototype[k]) {
+        this[k] = props[k];
+      } else if (Search.prototype[k]) {
+        throw "Invalid property \"" + k + "\", this is a reserved key";
+      }
+    }
+    return this;
+  }
+
+  get(key) {
+    let props = {};
+    if (typeof key === "object") {
+      for (var i = 0, n = key.length; i < n; i++) {
+        props[key[i]] = this.get(key[i]);
+      }
+      return props;
+    }
+    return this[key];
+  }
+}
 
 Search.prototype.clear = clear;
