@@ -1,5 +1,16 @@
 const clear = require("./clear");
 
+const reserved = {
+  searchEach : true,
+  setSchema  : true,
+  setValue   : true,
+  toString   : true,
+  set        : true,
+  get        : true,
+  schema     : true,
+  keys       : true,
+};
+
 function valueByType(str) {
   let n = Number(str);
   return isNaN(n) ? str : n;
@@ -68,17 +79,23 @@ export default class Search {
         let delimiter = false;
 
         element[0] = decodeURI(element[0]);
-        element[1] = decodeURI(element[1]);
+        element[1] = element[1] && decodeURI(element[1]);
 
-        if (element[1].indexOf(",") > -1) {
-          delimiter = ",";
-        } else if (element[1].indexOf("+") > -1) {
-          delimiter = "+";
+        if (reserved[element[0]]) {
+          throw new Error("Invalid name: " + element[0] + ", this is a reserved name");
+        }
+
+        if (element[1]) {
+          if (element[1].indexOf(",") > -1) {
+            delimiter = ",";
+          } else if (element[1].indexOf("+") > -1) {
+            delimiter = "+";
+          }
         }
 
         callback({
           key       : isArray ? element[0].slice(0, -2) : element[0],
-          value     : element[1],
+          value     : valueByType(element[1]),
           delimiter : delimiter,
           type      : isArray ? "array" : "object"
         });
@@ -89,7 +106,8 @@ export default class Search {
   setSchema(schema) {
     this.searchEach(schema, props => {
       props.map = [];
-      if (props.value) {
+
+      if (props.delimiter) {
         props.value.split(props.delimiter).forEach(name => {
           if (name[0] === ":") {
             props.map.push(name.substring(1));
@@ -97,10 +115,14 @@ export default class Search {
             props.map.push({ constant : name });
           }
         });
+      } else if (props.value && props.value[0] === ":") {
+        props.map.push(props.value.substring(1));
       }
+
       if (this.keys.indexOf(props.key) === -1) {
         this.keys.push(props.key);
       }
+
       this.schema[props.key] = props;
     });
   }
@@ -110,14 +132,16 @@ export default class Search {
       const ref = this.schema[props.key];
       if (props.value && ref) {
         if (ref.map.length) {
-          this.value[props.key] = {};
+          this[props.key] = {};
           props.value
             .split(ref.delimiter)
             .forEach((value, i) => {
-              this.value[ref.map[i]] = valueByType(value);
+              this[ref.map[i]] = valueByType(value);
             });
+        } else if (props.type === "array") {
+          this[props.key] = (this[props.key] || []).concat(props.value);
         } else {
-          this.value[props.key] = valueByType(props.value);
+          this[props.key] = props.value;
         }
       } else {
         this.isMatch = false;
@@ -128,7 +152,7 @@ export default class Search {
   toString() {
     const search = [];
     for (let k in this) {
-      if (this.hasOwnProperty(k) && !Search.prototype[k]) {
+      if (this.hasOwnProperty(k) && !reserved[k]) {
         if (this.schema[k] && this.schema[k].map.length) {
           if (this.schema[k].type === "array") {
             search.push(
@@ -163,7 +187,7 @@ export default class Search {
 
   set(props) {
     for (var k in props) {
-      if (props.hasOwnProperty(k) && !Search.prototype[k]) {
+      if (props.hasOwnProperty(k) && !reserved[k]) {
         this[k] = props[k];
       } else if (Search.prototype[k]) {
         throw "Invalid property \"" + k + "\", this is a reserved key";
