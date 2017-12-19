@@ -46,10 +46,13 @@ function schemaObjectToString(key, value, schema) {
 
 export default class Search {
   constructor(schema, location) {
-    this.isMatch  = true;
-    this.schema   = {};
-    this.keys     = [];
+    this.isMatch = (
+      typeof schema.search === "string" &&
+      typeof location.search === "string"
+    );
 
+    this.schema  = {};
+    this.keys    = [];
     this.setSchema(schema.search);
     this.setValue(location.search);
   }
@@ -96,7 +99,6 @@ export default class Search {
   }
 
   setValue(search) {
-    this.isMatch = !!search;
     this.searchEach(search, props => {
       const ref = this.schema[props.key];
       if (props.value && ref) {
