@@ -66,31 +66,37 @@ export default class URL {
     return undefined;
   }
 
-  getUrlHref(params, loc) {
-    if (typeof loc === "object") {
-      return loc.href || loc.origin;
-    } else if (params) {
-      return params;
+  getUrlHref(location) {
+    if (typeof location === "object") {
+      return location.href || this.getLocationString(location);
     }
+    return location;
   }
 
   getUrlPathname(location) {
-    let string = location ? location.split("?")[0].split("#")[0] : location;
-    let end    = string && string.length;
-    let start  = 0;
-
-    if (typeof loc === "object") {
+    if (typeof location === "object") {
       return this.getUrlPathname(
+        location.pathname ||
         this.getLocationString(location)
       );
-    } else if (string) {
-      if (string.indexOf("http://") === 0) {
-        start += 7;
-      } else if (string.indexOf("https://") === 0) {
-        start += 8;
+    } else if (typeof location === "string") {
+      let string = location ? location.split("?")[0].split("#")[0] : location;
+      let end    = string && string.length;
+      let start  = 0;
+
+      if (typeof loc === "object") {
+        return this.getUrlPathname(
+          this.getLocationString(location)
+        );
+      } else if (string) {
+        if (string.indexOf("http://") === 0) {
+          start += 7;
+        } else if (string.indexOf("https://") === 0) {
+          start += 8;
+        }
+        start = string.indexOf("/", start);
+        return start === -1 ? "/" : string.substring(start, end);
       }
-      start = string.indexOf("/", start);
-      return start === -1 ? "/" : string.substring(start, end);
     }
 
     return undefined;
@@ -113,9 +119,13 @@ export default class URL {
 
   getUrlSearch(location) {
     if (typeof location === "object") {
-      return location.search ? location.search : this.getUrlSearch(location.href);
+      return this.getUrlSearch(
+        location.search ||
+        this.getLocationString(location)
+      );
     } else if (location) {
-      return location.split("?")[1] ? "?" + location.split("?")[1] : "";
+      let split = location.split("?");
+      return split[1] ? "?" + location.split("?")[1] : "";
     }
 
     return undefined;
