@@ -1,6 +1,8 @@
 export default class Hash {
-  constructor(location) {
-    this.value = location.hash;
+  constructor(schema, location) {
+    this.schema  = schema.hash;
+    this.value   = location.hash || schema.hash;
+    this.isMatch = this.schema === this.value;
   }
 
   toString() {
@@ -10,4 +12,4 @@ export default class Hash {
     }
     return str;
   }
-};
+}
