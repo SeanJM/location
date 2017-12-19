@@ -58,7 +58,7 @@ export default class URL {
 
   getUrlHash(params, loc) {
     let split = params && params.split("#")[1];
-    let hash  = split ? "#" + split : "";
+    let hash  = split && "#" + split;
     let isLoc = typeof loc === "object";
 
     if (hash && (isLoc && !loc.hash || !isLoc)) {
@@ -73,7 +73,7 @@ export default class URL {
           : "";
     }
 
-    return "";
+    return undefined;
   }
 
   getUrlHref(params, loc) {
@@ -84,14 +84,14 @@ export default class URL {
     }
   }
 
-  getUrlPathname(params, loc) {
-    let string = params ? params.split("?")[0].split("#")[0] : "";
+  getUrlPathname(location) {
+    let string = location ? location.split("?")[0].split("#")[0] : location;
+    let end    = string && string.length;
     let start  = 0;
-    let end    = string.length;
 
     if (typeof loc === "object") {
       return this.getUrlPathname(
-        this.getLocationString(loc)
+        this.getLocationString(location)
       );
     } else if (string) {
       if (string.indexOf("http://") === 0) {
@@ -100,9 +100,10 @@ export default class URL {
         start += 8;
       }
       start = string.indexOf("/", start);
+      return start === -1 ? "/" : string.substring(start, end);
     }
 
-    return start === -1 ? "/" : string.substring(start, end);
+    return undefined;
   }
 
   getUrlOrigin(location) {
@@ -127,7 +128,7 @@ export default class URL {
       return location.split("?")[1] ? "?" + location.split("?")[1] : "";
     }
 
-    return "";
+    return undefined;
   }
 
   locationFromString(string) {
