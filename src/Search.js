@@ -63,16 +63,23 @@ export default class Search {
       let split = str.split("&").filter(a => a.length);
 
       for (var i = 0, n = split.length; i < n; i++) {
-        let element = split[i].split("=");
-        let isArray = element[0].slice(-2) === "[]";
+        let element   = split[i].split("=");
+        let isArray   = element[0].slice(-2) === "[]";
+        let delimiter = false;
 
         element[0] = decodeURI(element[0]);
         element[1] = decodeURI(element[1]);
 
+        if (element[1].indexOf(",") > -1) {
+          delimiter = ",";
+        } else if (element[1].indexOf("+") > -1) {
+          delimiter = "+";
+        }
+
         callback({
           key       : isArray ? element[0].slice(0, -2) : element[0],
           value     : element[1],
-          delimiter : element[1] && element[1].indexOf(",") > -1 ? "," : "+",
+          delimiter : delimiter,
           type      : isArray ? "array" : "object"
         });
       }
