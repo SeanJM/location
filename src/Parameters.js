@@ -21,86 +21,86 @@ function maybeError(self, key) {
   }
 }
 
-function Parameters(location) {
-  this.path    = pathnameToArray(location.pathname);
-  this.params  = pathnameToArray(location.params);
-  this.isMatch = this.params.length === 0 || this.path.length === this.params.length;
+export default class Parameters {
+  constructor(schema, location) {
+    this.schema  = schema   && pathnameToArray(schema.pathname);
+    this.value   = location && pathnameToArray(location.pathname);
+    this.isMatch = true;
 
-  if (this.params.length === 1 && this.params[0] === "*") {
-    this.params = this.path.slice();
-  }
-
-  for (let i = 0, n = this.params.length; i < n; i++) {
-    if (
-      !this.path[i] ||
-      (this.params[i][0] !== ":" &&
-       this.params[i] !== "*" &&
-       this.params[i] !== this.path[i])
-    ) {
+    if (this.schema.length === 1 && this.schema[0] === "*") {
+      this.schema = this.value.map(() => "*");
+    } else if (this.schema.length !== this.value.length) {
       this.isMatch = false;
     }
 
-    if (this.params[i][0] === ":") {
-      maybeError(this, this.params[i].slice(1));
-      this[this.params[i].slice(1)] = this.path[i];
+    for (let i = 0, n = this.schema.length; i < n; i++) {
+      if (
+        this.schema[i][0] !== ":" &&
+        this.schema[i]    !== "*" &&
+        this.schema[i]    !== this.value[i]
+      ) {
+        this.isMatch = false;
+      } else if (this.schema[i][0] === ":") {
+        maybeError(this, this.schema[i].slice(1));
+        this[this.schema[i].slice(1)] = this.value[i];
+      }
     }
+  }
+
+  push(value) {
+    if (typeof value === "object") {
+      for (var k in value) {
+        maybeError(this, k);
+        this[k] = value[k];
+        this.schema.push(value[k]);
+        this.value.push(value[k]);
+      }
+    } else {
+      this.schema.push(value);
+      this.value.push(value);
+    }
+
+    return this;
+  }
+
+  unshift(value) {
+    if (typeof value === "object") {
+      for (var k in value) {
+        maybeError(this, k);
+        this[k] = value[k];
+        this.schema.unshift(value[k]);
+        this.value.unshift(value[k]);
+      }
+    } else {
+      this.schema.unshift(value);
+      this.value.unshift(value);
+    }
+
+    return this;
+  }
+
+  startsWith(value) {
+    const str  = this.toString();
+    const path = "/" + pathnameToArray(value).join("/");
+    const n    = path.length;
+    return str.indexOf(path) === 0 && (str[n] === "/" || !str[n + 1]);
+  }
+
+  is(value) {
+    return this.toString() === "/" + pathnameToArray(value).join("/");
+  }
+
+  toString() {
+    const length = this.value.length;
+    const query  = new Array(length);
+
+    for (var i = 0; i < length; i++) {
+      query[i] = this.value[i];
+    }
+
+    return "/" + query.join("/");
   }
 }
 
-Parameters.prototype.push = function (value) {
-  if (typeof value === "object") {
-    for (var k in value) {
-      maybeError(this, k);
-      this[k] = value[k];
-      this.params.push(value[k]);
-    }
-  } else {
-    this.params.push(value);
-  }
-
-  return this;
-};
-
-Parameters.prototype.unshift = function (value) {
-  if (typeof value === "object") {
-    for (var k in value) {
-      maybeError(this, k);
-      this[k] = value[k];
-      this.params.unshift(value[k]);
-    }
-  } else {
-    this.params.unshift(value);
-  }
-
-  return this;
-};
-
-Parameters.prototype.startsWith = function (value) {
-  const str  = this.toString();
-  const path = "/" + pathnameToArray(value).join("/");
-  const n    = path.length;
-  return str.indexOf(path) === 0 && (str[n] === "/" || !str[n + 1]);
-};
-
-Parameters.prototype.is = function (value) {
-  return this.toString() === "/" + pathnameToArray(value).join("/");
-};
-
-Parameters.prototype.toString = function () {
-  const length = this.params.length;
-  const query  = new Array(length);
-
-  for (var i = 0; i < length; i++) {
-    query[i] = (
-      this.params[i][0] === ":"
-        ? this[this.params[i].slice(1)]
-        : this.params[i]
-    );
-  }
-
-  return "/" + query.join("/");
-};
-
 Parameters.prototype.set   = set;
 Parameters.prototype.clear = clear;
-module.exports = Parameters;
