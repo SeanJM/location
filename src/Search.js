@@ -1,15 +1,5 @@
 const clear = require("./clear");
 
-const reserved = {
-  schema     : true,
-  keys       : true,
-  toString   : true,
-  getSchema  : true,
-  fromString : true,
-  set        : true,
-  get        : true,
-};
-
 function valueByType(str) {
   let n = Number(str);
   return isNaN(n) ? str : n;
@@ -106,6 +96,7 @@ export default class Search {
   }
 
   setValue(search) {
+    this.isMatch = !!search;
     this.searchEach(search, props => {
       const ref = this.schema[props.key];
       if (props.value && ref) {
@@ -128,7 +119,7 @@ export default class Search {
   toString() {
     const search = [];
     for (let k in this) {
-      if (this.hasOwnProperty(k) && !reserved[k]) {
+      if (this.hasOwnProperty(k) && !Search.prototype[k]) {
         if (this.schema[k] && this.schema[k].map.length) {
           if (this.schema[k].type === "array") {
             search.push(
