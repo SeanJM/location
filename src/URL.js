@@ -50,29 +50,21 @@ export default class URL {
   }
 
   getLocationString(location) {
-    return (
-      location &&
-      (location.href || location.pathname || location.origin)
+    return location && (
+      location.href || location.pathname || location.origin
     );
   }
 
-  getUrlHash(params, loc) {
-    let split = params && params.split("#")[1];
-    let hash  = split && "#" + split;
-    let isLoc = typeof loc === "object";
-
-    if (hash && (isLoc && !loc.hash || !isLoc)) {
-      return hash;
+  getUrlHash(location) {
+    if (typeof location === "string") {
+      let split = location.split("#")[1];
+      let hash  = split && "#" + split;
+      return hash || "";
+    } else if (location) {
+      return this.getUrlHash(
+        location.hash || this.getLocationString(location)
+      );
     }
-
-    if (isLoc) {
-      return loc.hash
-        ? loc.hash
-        : loc.href
-          ? this.getUrlHash(loc.href)
-          : "";
-    }
-
     return undefined;
   }
 
