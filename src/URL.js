@@ -27,7 +27,6 @@ export default class URL {
 
   setLocation(location) {
     this.location = {
-      value    : location,
       origin   : this.getUrlOrigin(location),
       href     : this.getUrlHref(location),
       pathname : this.getUrlPathname(location),
@@ -39,7 +38,6 @@ export default class URL {
 
   setSchema(schema) {
     this.schema = {
-      value    : schema,
       origin   : this.getUrlOrigin(schema),
       href     : this.getUrlHref(schema),
       pathname : this.getUrlPathname(schema),
