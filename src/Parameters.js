@@ -2,14 +2,13 @@ const set   = require("./set");
 const clear = require("./clear");
 
 function pathnameToArray(pathname) {
+  pathname = pathname || "";
   if (pathname[0] === "/") {
     pathname = pathname.substring(1);
   }
-
   if (pathname[pathname.length - 1] === "/") {
     pathname = pathname.substring(0, pathname.length - 1);
   }
-
   return pathname.length ? pathname.split("/") : [];
 }
 
@@ -23,9 +22,9 @@ function maybeError(self, key) {
 
 export default class Parameters {
   constructor(schema, location) {
-    this.schema  = schema   && pathnameToArray(schema.pathname);
-    this.value   = location && pathnameToArray(location.pathname);
-    this.isMatch = true;
+    this.schema  = pathnameToArray(schema.pathname);
+    this.value   = pathnameToArray(location.pathname);
+    this.isMatch = !!location.pathname;
 
     if (this.schema.length === 1 && this.schema[0] === "*") {
       this.schema = this.value.map(() => "*");
