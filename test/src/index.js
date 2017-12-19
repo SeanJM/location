@@ -2,73 +2,12 @@ import tinytest from "tiny-test";
 import URL      from "../../src/index.js";
 import schemaStringEmptyLocation from "./schemaStringEmptyLocation";
 import schemaObjectEmptyLocation from "./schemaObjectEmptyLocation";
-import schemaSearch from "./schemaSearch";
+import schemaParameters from "./schemaParameters";
 
 tinytest(function (test, load) {
   schemaStringEmptyLocation(test);
   schemaObjectEmptyLocation(test);
-  schemaSearch(test);
-
-  // test("http://www.google.com/:x/:y")
-  //   .this(function () {
-  //     let l = new URL("http://www.google.com/:x/:y", { href: "http://www.google.com/cats/dogs" });
-  //     return l;
-  //   })
-  //   .isDeepEqual(function () {
-  //     return {
-  //       location: {
-  //         origin       : "http://www.google.com",
-  //         href         : "http://www.google.com/cats/dogs",
-  //         hash         : "",
-  //         pathname     : "/cats/dogs",
-  //         params       : "/:x/:y",
-  //         search       : "",
-  //         searchSchema : ""
-  //       },
-  //       hash   : { value: "" },
-  //       origin : { value: "http://www.google.com" },
-  //       search : { schema: {}, schemaKeys: [] },
-  //       params : {
-  //         path    : [ "cats", "dogs" ],
-  //         params  : [ ":x", ":y" ],
-  //         isMatch : true,
-  //         x         : "cats",
-  //         y         : "dogs",
-  //       },
-  //       isMatch : true
-  //     };
-  //   });
-
-  // test("http://www.google.com/:x/:y (isMatch = false)")
-  //   .this(function () {
-  //     let l = new URL("http://www.google.com/:x/:y", { href: "http://www.google.com/cats" });
-  //     return l;
-  //   })
-  //   .isDeepEqual(function () {
-  //     return {
-  //       location: {
-  //         origin       : "http://www.google.com",
-  //         href         : "http://www.google.com/cats",
-  //         hash         : "",
-  //         pathname     : "/cats",
-  //         params       : "/:x/:y",
-  //         search       : "",
-  //         searchSchema : ""
-  //       },
-  //       hash   : { value: "" },
-  //       origin : { value: "http://www.google.com" },
-  //       search : { schema: {}, schemaKeys: [] },
-  //       params : {
-  //         path    : [ "cats" ],
-  //         params  : [ ":x", ":y" ],
-  //         isMatch : false,
-  //         x         : "cats",
-  //         y         : undefined,
-  //       },
-  //       isMatch : false
-  //     };
-  //   });
-
+  schemaParameters(test);
   // test("http://www.google.com?search=1")
   //   .this(function () {
   //     let l = new URL({ href: "http://www.google.com/?search=1" });
