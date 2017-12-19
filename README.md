@@ -7,8 +7,27 @@ A constructor for manipulating and querying URLs
 #### Usage
 ```js
 import URL from "urli";
-const location = new URL(Schema, LocationObject|String);
+const location = new URL(Schema, Location);
 ```
+
+#### Types
+
+##### Arguments
+Argument|Type
+-|-
+Schema|UrlObject\|String
+Location|UrlObject\|String
+
+##### UrlObject
+Property|Type|Optional
+-|-
+`origin`|`String`|`true`
+`href`|`String`|`true`
+`pathname`|`String`|`true`
+`hash`|`String`|`true`
+`search`|`String`|`true`
+
+#### Example Usage
 
 ```javascript
 location.setSchema(String)
