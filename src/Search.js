@@ -2,7 +2,7 @@ const clear = require("./clear");
 
 const reserved = {
   schema     : true,
-  schemaKeys : true,
+  keys : true,
   toString   : true,
   getSchema  : true,
   fromString : true,
@@ -15,63 +15,55 @@ function valueByType(str) {
   return isNaN(n) ? str : n;
 }
 
-function Search(location) {
-  this.getSchema(location.searchSchema);
-  this.fromString(location.search);
+// ?this=value&that[]=a&that[]=b
+// ?this=:key+:property
+
+export default function Search(schema, location) {
+  const search = schema.search[0] === "?"
+    ? schema.search.slice(1)
+    : schema.search;
+
+  const split = search.split("&").filter(a => a.length);
+
+  this.schema = {};
+  this.keys   = [];
+
+  split.forEach(str => {
+    let element = str.split("=");
+    let isArray = element[0].slice(-2) === "[]";
+
+    let value = {
+      delimiter : element && element.indexOf(",") > -1 ? "," : "+",
+      type      : isArray ? "array" : "object",
+      map       : []
+    };
+
+    if (element[1]) {
+      element[1].split(value.delimiter).forEach(name => {
+        if (name[0] === ":") {
+          value.map.push(name.substring(1));
+        } else {
+          value.map.push({ constant : name });
+        }
+      });
+    }
+
+    element[0] = isArray
+      ? element[0].slice(0, -2)
+      : element[0];
+
+    if (this.keys.indexOf(element[0]) === -1) {
+      this.keys.push(element[0]);
+    }
+
+    this.schema[element[0]] = value;
+  });
+
+  this.fromString(schema.search);
 }
 
 function getType(element, type) {
-  let res = {
-    delimiter : element && element.indexOf(",") > -1 ? "," : "+",
-    type      : type,
-    map       : []
-  };
-
-  if (element) {
-    element.split(res.delimiter).forEach(name => {
-      if (name[0] === ":") {
-        res.map.push(name.substring(1));
-      } else {
-        res.map.push({ constant: name });
-      }
-    });
-  }
-
-  return res;
 }
-
-Search.prototype.getSchema = function (searchSchema) {
-  const split = (
-    searchSchema[0] === "?"
-      ? searchSchema.slice(1)
-      : searchSchema
-  ).split("&");
-
-  let isArray = false;
-  let element;
-
-  this.schema = {};
-  this.schemaKeys = [];
-
-  for (var i = 0, n = split.length; i < n; i++) {
-    if (split[i].length) {
-      element = split[i].split("=");
-      isArray = element[0].slice(-2) === "[]";
-
-      element[0] = isArray
-        ? element[0].slice(0, -2)
-        : element[0];
-
-      this.schemaKeys.push(element[0]);
-      this.schema[element[0]] = (
-        getType(element[1], isArray
-          ? "array"
-          : "object"
-        )
-      );
-    }
-  }
-};
 
 Search.prototype.fromString = function (search) {
   const list = search && search.length
@@ -124,12 +116,12 @@ Search.prototype.fromString = function (search) {
     }
   }
 
-  for (var i = 0, n = this.schemaKeys.length; i < n; i++) {
-    if (typeof this[this.schemaKeys[i]] === "undefined") {
-      if (this.schema[this.schemaKeys[i]].type === "array") {
-        this[this.schemaKeys[i]] = [];
-      } else if (this.schema[this.schemaKeys[i]].type === "object") {
-        this[this.schemaKeys[i]] = {};
+  for (var i = 0, n = this.keys.length; i < n; i++) {
+    if (typeof this[this.keys[i]] === "undefined") {
+      if (this.schema[this.keys[i]].type === "array") {
+        this[this.keys[i]] = [];
+      } else if (this.schema[this.keys[i]].type === "object") {
+        this[this.keys[i]] = {};
       }
     }
   }
@@ -231,5 +223,3 @@ Search.prototype.get = function (key) {
 };
 
 Search.prototype.clear = clear;
-
-module.exports = Search;

@@ -1,9 +1,11 @@
-function Origin(location) {
-  this.value = location.origin;
+export default class Origin {
+  constructor(schema, location) {
+    this.schema  = schema.origin;
+    this.value   = location.origin;
+    this.isMatch = this.schema === this.value;
+  }
+
+  toString() {
+    return this.value || "";
+  }
 }
-
-Origin.prototype.toString = function () {
-  return this.value ? this.value : "";
-};
-
-module.exports = Origin;

@@ -1,2 +1,2 @@
 import URL from "./URL";
-module.exports = URL;
+export default URL;

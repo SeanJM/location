@@ -1,4 +1,4 @@
-module.exports = class Hash {
+export default class Hash {
   constructor(location) {
     this.value = location.hash;
   }
