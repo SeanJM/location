@@ -11,7 +11,7 @@ const reserved = {
   keys       : true,
 };
 
-function valueByType(str) {
+function filterValue(str) {
   let n = Number(str);
   return isNaN(n) ? str : n;
 }
@@ -95,7 +95,7 @@ export default class Search {
 
         callback({
           key       : isArray ? element[0].slice(0, -2) : element[0],
-          value     : valueByType(element[1]),
+          value     : element[1],
           delimiter : delimiter,
           type      : isArray ? "array" : "object"
         });
@@ -106,7 +106,6 @@ export default class Search {
   setSchema(schema) {
     this.searchEach(schema, props => {
       props.map = [];
-
       if (props.delimiter) {
         props.value.split(props.delimiter).forEach(name => {
           if (name[0] === ":") {
@@ -123,42 +122,70 @@ export default class Search {
         this.keys.push(props.key);
       }
 
+      props.value            = filterValue(props.value);
       this.schema[props.key] = props;
     });
   }
 
   setValue(search) {
+    const array  = {};
+    const object = [];
+
     this.searchEach(search, props => {
       const ref = this.schema[props.key];
-      if (ref && ref.map.length) {
-        this[props.key] = (
-          props.type === "object"
-            ? {}
-            : (this[props.key] || [])
-        );
-
-        if (ref.delimiter) {
-          props.value
-            .split(ref.delimiter)
-            .forEach((value, i) => {
-              this[props.key][ref.map[i]] = valueByType(value);
-            });
-        } else if (props.type === "array") {
-          this[props.key].push({
-            [ref.map[0]] : props.value
-          });
-        } else {
-          this[props.key][ref.map[0]] = props.value;
+      if (props.type === "array") {
+        if (!array[props.key]) {
+          array[props.key] = {
+            key       : props.key,
+            delimiter : false,
+            list      : []
+          };
         }
+        if (props.delimiter) {
+          array[props.key].delimiter = props.delimiter;
+        }
+        array[props.key].list.push(props.value);
       } else {
-        if (!ref) {
-          this.isMatch = false;
-        }
-        if (props.type === "array") {
-          this[props.key] = (this[props.key] || []).concat(props.value);
+        object.push(props);
+      }
+      if (!ref) {
+        this.isMatch = false;
+      }
+    });
+
+    for (var k in array) {
+      array[k].list.forEach((value, pIndex) => {
+        const ref = this.schema[array[k].key];
+        this[array[k].key] = (this[array[k].key] || []);
+        if (ref && ref.map.length) {
+          if (ref.delimiter) {
+            value
+              .split(array[k].delimiter)
+              .forEach((value, i) => {
+                this[array[k].key][pIndex] = (this[array[k].key][pIndex] || {});
+                this[array[k].key][pIndex][ref.map[i]] = filterValue(value);
+              });
+          } else {
+            this[array[k].key][pIndex] = (this[array[k].key][pIndex] || {});
+            this[array[k].key][pIndex][ref.map[0]] = filterValue(value);
+          }
         } else {
-          this[props.key] = props.value;
+          this[array[k].key].push(filterValue(value));
         }
+      });
+    }
+
+    object.forEach(props => {
+      const ref = this.schema[props.key];
+      this[props.key] = {};
+      if (ref.delimiter) {
+        props.value
+          .split(ref.delimiter)
+          .forEach(value => {
+            this[props.key][ref.map[0]] = filterValue(value);
+          });
+      } else {
+        this[props.key][ref.map[0]] = filterValue(props.value);
       }
     });
   }
