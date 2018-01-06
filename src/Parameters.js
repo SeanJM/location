@@ -36,10 +36,11 @@ function schemaType(string) {
 export default class Parameters {
   constructor(schema, location) {
     var schemaValue = [];
+    var t;
 
-    this.schema     = pathnameToArray(schema.pathname);
-    this.value      = pathnameToArray(location.pathname);
-    this.isMatch    = !!location.pathname;
+    this.schema  = pathnameToArray(schema.pathname);
+    this.value   = pathnameToArray(location.pathname);
+    this.isMatch = !!location.pathname;
 
     for (let i = this.schema.length - 1; i >= 0; i--) {
       if (this.schema[i] === "*" && this.schema[i - 1] === "*") {
@@ -70,15 +71,16 @@ export default class Parameters {
     }
 
     for (let i = 0, n = this.schema.length; i < n; i++) {
+      t = this.schema[i];
       if (
-        this.schema[i].type !== "variable" &&
-        this.schema[i].key  !== "*" &&
-        this.schema[i].key  !== this.value[i]
+        t.type !== "variable" &&
+        t.key  !== "*" &&
+        t.key  !== this.value[i]
       ) {
         this.isMatch = false;
-      } else if (this.schema[i].type === "variable") {
-        maybeError(this, this.schema[i].key.slice(1));
-        this[this.schema[i].key] = this.value[i];
+      } else if (t.type === "variable") {
+        maybeError(this, t.key.slice(1));
+        this[t.key] = this.value[i];
       }
     }
   }

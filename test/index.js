@@ -75,7 +75,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _URL = __webpack_require__(4);
+var _URL = __webpack_require__(5);
 
 var _URL2 = _interopRequireDefault(_URL);
 
@@ -114,7 +114,7 @@ var _tinyTest = __webpack_require__(3);
 
 var _tinyTest2 = _interopRequireDefault(_tinyTest);
 
-var _schemaStringEmptyLocation = __webpack_require__(10);
+var _schemaStringEmptyLocation = __webpack_require__(4);
 
 var _schemaStringEmptyLocation2 = _interopRequireDefault(_schemaStringEmptyLocation);
 
@@ -177,23 +177,91 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+exports.default = function (test) {
+  test("http://www.google.com/").this(function () {
+    var l = new _index2.default("http://www.google.com/");
+    return l;
+  }).isDeepEqual(function () {
+    return {
+      schema: {
+        origin: "http://www.google.com",
+        href: "http://www.google.com/",
+        pathname: "/",
+        hash: "",
+        search: ""
+      },
+
+      location: {
+        origin: undefined,
+        href: undefined,
+        hash: undefined,
+        pathname: undefined,
+        search: undefined
+      },
+
+      hash: {
+        schema: "",
+        value: undefined,
+        isMatch: false
+      },
+
+      origin: {
+        schema: "http://www.google.com",
+        value: undefined,
+        isMatch: false
+      },
+
+      search: {
+        schema: {},
+        keys: [],
+        isMatch: false
+      },
+
+      params: {
+        schema: [],
+        value: [],
+        isMatch: false
+      },
+
+      isMatch: false
+    };
+  });
+};
+
+var _index = __webpack_require__(0);
+
+var _index2 = _interopRequireDefault(_index);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _Origin = __webpack_require__(5);
+var _Origin = __webpack_require__(6);
 
 var _Origin2 = _interopRequireDefault(_Origin);
 
-var _Search = __webpack_require__(6);
+var _Search = __webpack_require__(7);
 
 var _Search2 = _interopRequireDefault(_Search);
 
-var _Parameters = __webpack_require__(7);
+var _Parameters = __webpack_require__(8);
 
 var _Parameters2 = _interopRequireDefault(_Parameters);
 
-var _Hash = __webpack_require__(9);
+var _Hash = __webpack_require__(10);
 
 var _Hash2 = _interopRequireDefault(_Hash);
 
@@ -405,7 +473,7 @@ var URL = function () {
 exports.default = URL;
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -449,7 +517,7 @@ var Origin = function () {
 exports.default = Origin;
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -731,7 +799,7 @@ exports.default = Search;
 Search.prototype.clear = clear;
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -747,7 +815,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var set = __webpack_require__(8);
+var set = __webpack_require__(9);
 var clear = __webpack_require__(1);
 
 function pathnameToArray(pathname) {
@@ -785,6 +853,7 @@ var Parameters = function () {
     _classCallCheck(this, Parameters);
 
     var schemaValue = [];
+    var t;
 
     this.schema = pathnameToArray(schema.pathname);
     this.value = pathnameToArray(location.pathname);
@@ -815,11 +884,12 @@ var Parameters = function () {
     }
 
     for (var _i2 = 0, _n = this.schema.length; _i2 < _n; _i2++) {
-      if (this.schema[_i2].type !== "variable" && this.schema[_i2].key !== "*" && this.schema[_i2].key !== this.value[_i2]) {
+      t = this.schema[_i2];
+      if (t.type !== "variable" && t.key !== "*" && t.key !== this.value[_i2]) {
         this.isMatch = false;
-      } else if (this.schema[_i2].type === "variable") {
-        maybeError(this, this.schema[_i2].key.slice(1));
-        this[this.schema[_i2].key] = this.value[_i2];
+      } else if (t.type === "variable") {
+        maybeError(this, t.key.slice(1));
+        this[t.key] = this.value[_i2];
       }
     }
   }
@@ -911,7 +981,7 @@ Parameters.prototype.set = set;
 Parameters.prototype.clear = clear;
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -929,7 +999,7 @@ function set(props) {
 }
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -967,74 +1037,6 @@ var Hash = function () {
 }();
 
 exports.default = Hash;
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-exports.default = function (test) {
-  test("http://www.google.com/").this(function () {
-    var l = new _index2.default("http://www.google.com/");
-    return l;
-  }).isDeepEqual(function () {
-    return {
-      schema: {
-        origin: "http://www.google.com",
-        href: "http://www.google.com/",
-        pathname: "/",
-        hash: "",
-        search: ""
-      },
-
-      location: {
-        origin: undefined,
-        href: undefined,
-        hash: undefined,
-        pathname: undefined,
-        search: undefined
-      },
-
-      hash: {
-        schema: "",
-        value: undefined,
-        isMatch: false
-      },
-
-      origin: {
-        schema: "http://www.google.com",
-        value: undefined,
-        isMatch: false
-      },
-
-      search: {
-        schema: {},
-        keys: [],
-        isMatch: false
-      },
-
-      params: {
-        schema: [],
-        value: [],
-        isMatch: false
-      },
-
-      isMatch: false
-    };
-  });
-};
-
-var _index = __webpack_require__(0);
-
-var _index2 = _interopRequireDefault(_index);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /***/ }),
 /* 11 */
