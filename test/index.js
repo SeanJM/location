@@ -134,6 +134,22 @@ var _schemaSearch = __webpack_require__(13);
 
 var _schemaSearch2 = _interopRequireDefault(_schemaSearch);
 
+var _toString = __webpack_require__(14);
+
+var _toString2 = _interopRequireDefault(_toString);
+
+var _matching = __webpack_require__(15);
+
+var _matching2 = _interopRequireDefault(_matching);
+
+var _hash = __webpack_require__(16);
+
+var _hash2 = _interopRequireDefault(_hash);
+
+var _urlMethods = __webpack_require__(17);
+
+var _urlMethods2 = _interopRequireDefault(_urlMethods);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 (0, _tinyTest2.default)(function (test, load) {
@@ -141,564 +157,11 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   (0, _schemaObjectEmptyLocation2.default)(test);
   (0, _schemaParameters2.default)(test);
   (0, _schemaSearch2.default)(test);
-  // test("http://www.google.com/ (toString)")
-  //   .this(function () {
-  //     let l = new URL("http://www.google.com/");
-  //     return l.toString();
-  //   })
-  //   .isEqual(function () {
-  //     return "http://www.google.com/";
-  //   });
 
-  // test("http://www.google.com/?search=2 (toString)")
-  //   .this(function () {
-  //     let l = new URL({ href: "http://www.google.com/?search=2" });
-  //     l.search.search = 3;
-  //     return l.toString();
-  //   })
-  //   .isEqual(function () {
-  //     return "http://www.google.com/?search=3";
-  //   });
-
-  // test("http://www.google.com/?search[]=1&search[]=2 (toString)")
-  //   .this(function () {
-  //     let l = new URL({ href: "http://www.google.com/?search[]=1&search[]=2" });
-  //     l.search.search[0] = 3;
-  //     return l.toString();
-  //   })
-  //   .isEqual(function () {
-  //     return "http://www.google.com/?search[]=3&search[]=2";
-  //   });
-
-  // test("http://www.google.com/?search[]=:number (toString)")
-  //   .this(function () {
-  //     let l = new URL("http://www.google.com/?search[]=:number", {
-  //       href: "http://www.google.com/?search[]=1&search[]=2"
-  //     });
-  //     l.search.search[0].number = 3;
-  //     return l.toString();
-  //   })
-  //   .isEqual(function () {
-  //     return "http://www.google.com/?search[]=3&search[]=2";
-  //   });
-
-  // test("http://www.google.com/?search[]=:name,:gender (toString)")
-  //   .this(function () {
-  //     let l = new URL("http://www.google.com/?search[]=:name,:gender", {
-  //       href: "http://www.google.com/?search[]=sean,male&search[]=sarah,female"
-  //     });
-  //     l.search.search[0].name = "John";
-  //     return l.toString();
-  //   })
-  //   .isEqual(function () {
-  //     return "http://www.google.com/?search[]=John,male&search[]=sarah,female";
-  //   });
-
-  // test("/user/:userID (string HREF)")
-  //   .this(function () {
-  //     const l = new URL(
-  //       "/user/:userID",
-  //       "/user/SeanJM"
-  //     );
-  //     return l.params.userID;
-  //   })
-  //   .isEqual(function () {
-  //     return "SeanJM";
-  //   });
-
-  // test("/user/:userID (object)")
-  //   .this(function () {
-  //     const l = new URL("/user/:userID", { pathname: "/user/SeanJM" });
-  //     return l.params.userID;
-  //   })
-  //   .isEqual(function () {
-  //     return "SeanJM";
-  //   });
-
-  // test("/user/:userID?depth[]=:number+:id")
-  //   .this(function () {
-  //     const l = new URL("/user/:userID?depth[]=:number+:id", {
-  //       pathname : "/user/SeanJM",
-  //       search   : "?depth[]=0+o8jk&depth[]=1+99qE&depth[]=2+eBPs"
-  //     });
-  //     return l.search.depth;
-  //   })
-  //   .isDeepEqual(function () {
-  //     return [{
-  //       number: 0,
-  //       id    : "o8jk"
-  //     }, {
-  //       number: 1,
-  //       id    : "99qE"
-  //     }, {
-  //       number: 2,
-  //       id    : "eBPs"
-  //     }];
-  //   });
-
-  // test("/post/:postID?origin=... (manipulating a mapped object)")
-  //   .this(function () {
-  //     const l = new URL("/post/:postID?origin=board+:category+:page", {
-  //       pathname: "/post/ezAYhlkuGEz",
-  //       search  : "?origin=board+food+1"
-  //     });
-
-  //     l.search.origin.category = "fitness";
-  //     return l.toString();
-  //   })
-  //   .isEqual(function () {
-  //     return "/post/ezAYhlkuGEz?origin=board+fitness+1";
-  //   });
-
-  // test("Empty")
-  //   .this(function () {
-  //     const l = new URL();
-  //     return l.toString();
-  //   })
-  //   .isEqual(function () {
-  //     return "/";
-  //   });
-
-  // test("/a vs /a/b (does not match)")
-  //   .this(function () {
-  //     const a = new URL("/:a", "/a");
-  //     const b = new URL("/:a", "/a/b");
-  //     return a.isMatch && !b.isMatch;
-  //   })
-  //   .isEqual(function () {
-  //     return true;
-  //   });
-
-  // test("*?origin=user+:userID+:section+:page")
-  //   .this(function () {
-  //     let l = new URL("*?origin=user+:userID+:section+:page", { href: "http://www.domain.com/?origin=user+98fjhd+all+1" });
-  //     return l;
-  //   })
-  //   .isDeepEqual(function () {
-  //     return {
-  //       location: {
-  //         origin       : "http://www.domain.com",
-  //         href         : "http://www.domain.com/?origin=user+98fjhd+all+1",
-  //         hash         : "",
-  //         pathname     : "/",
-  //         params       : "/",
-  //         search       : "?origin=user+98fjhd+all+1",
-  //         searchSchema : "?origin=user+:userID+:section+:page"
-  //       },
-
-  //       origin: {
-  //         value: "http://www.domain.com"
-  //       },
-
-  //       hash : { value: "" },
-
-  //       search: {
-  //         schema     : {
-  //           origin: {
-  //             delimiter: "+",
-  //             type : "object",
-  //             map: [ { constant: "user" }, "userID", "section", "page" ]
-  //           }
-  //         },
-  //         schemaKeys : [ "origin" ],
-  //         origin       : {
-  //           user: "user",
-  //           userID: "98fjhd",
-  //           section: "all",
-  //           page : 1
-  //         }
-  //       },
-
-  //       params: {
-  //         path    : [],
-  //         params  : [],
-  //         isMatch : true
-  //       },
-
-  //       isMatch: true
-  //     };
-  //   });
-
-  // test("*?origin=user+:userID+:section+:page (pathname, search)")
-  //   .this(function () {
-  //     let l = new URL("*?origin=user+:userID+:section+:page", {
-  //       pathname : "/post/p398dfjkj",
-  //       search   : "?origin=user+98fjhd+all+1"
-  //     });
-  //     return l;
-  //   })
-  //   .isDeepEqual(function () {
-  //     return {
-  //       location: {
-  //         origin       : undefined,
-  //         href         : undefined,
-  //         hash         : "",
-  //         pathname     : "/post/p398dfjkj",
-  //         params       : "/",
-  //         search       : "?origin=user+98fjhd+all+1",
-  //         searchSchema : "?origin=user+:userID+:section+:page"
-  //       },
-
-  //       origin: { value: undefined },
-
-  //       hash : { value: "" },
-
-  //       search: {
-  //         schema     : {
-  //           origin: {
-  //             delimiter: "+",
-  //             type : "object",
-  //             map: [ { constant: "user" }, "userID", "section", "page" ]
-  //           }
-  //         },
-  //         schemaKeys : [ "origin" ],
-  //         origin       : {
-  //           user: "user",
-  //           userID: "98fjhd",
-  //           section: "all",
-  //           page : 1
-  //         }
-  //       },
-
-  //       params: {
-  //         path    : [ "post", "p398dfjkj" ],
-  //         params  : [],
-  //         isMatch : true
-  //       },
-
-  //       isMatch: true
-  //     };
-  //   });
-
-  // test("/board/:category?page")
-  //   .this(function () {
-  //     let back            = new URL("/user/:userID/:section?page");
-  //     back.params.userID  = "98374jf";
-  //     back.params.section = "comments";
-  //     back.search.page    = 1;
-  //     return back.toString();
-  //   })
-  //   .isDeepEqual(function () {
-  //     return "/user/98374jf/comments?page=1";
-  //   });
-
-  // test("http://localhost:3000/login?reset")
-  //   .this(function () {
-  //     let url = new URL({ href: "http://localhost:3000/login?reset" });
-  //     return url.search.reset;
-  //   })
-  //   .isDeepEqual(function () {
-  //     return 1;
-  //   });
-
-  // test("http://localhost:3000/login?reset (toString)")
-  //   .this(function () {
-  //     let url = new URL({
-  //       href: "http://localhost:3000/login?reset"
-  //     });
-  //     return url.toString();
-  //   })
-  //   .isDeepEqual(function () {
-  //     return "http://localhost:3000/login?reset=1";
-  //   });
-
-  // test("http://localhost:3000/?string (search set)")
-  //   .this(function () {
-  //     let url = new URL({
-  //       href: "http://localhost:3000/?string"
-  //     });
-
-  //     url.search.set({
-  //       string: "this will be an encoded string"
-  //     });
-
-  //     return url.toString();
-  //   })
-  //   .isDeepEqual(function () {
-  //     return "http://localhost:3000/?string=this%20will%20be%20an%20encoded%20string";
-  //   });
-
-  // test("http://localhost:3000/?string (search get)")
-  //   .this(function () {
-  //     let url = new URL({
-  //       href: "http://localhost:3000/?string"
-  //     });
-
-  //     url.search.string = "this will be an encoded string";
-
-  //     return url.search.get("string");
-  //   })
-  //   .isDeepEqual(function () {
-  //     return "this will be an encoded string";
-  //   });
-
-  // test("http://localhost:3000/?string (search get array)")
-  //   .this(function () {
-  //     let url = new URL({
-  //       href: "http://localhost:3000/?string"
-  //     });
-
-  //     url.search.set({
-  //       string: "this will be an encoded string",
-  //       number: 2098
-  //     });
-
-  //     return url.search.get([ "string", "number" ]);
-  //   })
-  //   .isDeepEqual(function () {
-  //     return {
-  //       string: "this will be an encoded string",
-  //       number: 2098
-  //     };
-  //   });
-
-  // test("http://localhost:3000/?string (set pathname)")
-  //   .this(function () {
-  //     let url = new URL({
-  //       href: "http://localhost:3000/?string"
-  //     });
-
-  //     url.set({
-  //       pathname : "/path/name"
-  //     });
-
-  //     return url.toString();
-  //   })
-  //   .isDeepEqual(function () {
-  //     return "http://localhost:3000/path/name?string=1";
-  //   });
-
-  // test("http://localhost:3000/?string (set search)")
-  //   .this(function () {
-  //     let url = new URL({
-  //       href: "http://localhost:3000/login"
-  //     });
-
-  //     url.set({
-  //       search : "?search=1&cat=fluffy&dog=sam"
-  //     });
-
-  //     return url.toString();
-  //   })
-  //   .isDeepEqual(function () {
-  //     return "http://localhost:3000/login?search=1&cat=fluffy&dog=sam";
-  //   });
-
-  // test("http://localhost:3000/startswith/ (startsWith)")
-  //   .this(function () {
-  //     let url = new URL({
-  //       href: "http://localhost:3000/startswith/"
-  //     });
-  //     return url.params.startsWith("startswith");
-  //   })
-  //   .isDeepEqual(function () {
-  //     return true;
-  //   });
-
-  // test("/startswith (startsWith)")
-  //   .this(function () {
-  //     let url = new URL({
-  //       href: "/login"
-  //     });
-  //     return url.params.startsWith("/login");
-  //   })
-  //   .isDeepEqual(function () {
-  //     return true;
-  //   });
-
-  // test("http://localhost:3000/startswith/ (startsWith multiple)")
-  //   .this(function () {
-  //     let url = new URL({
-  //       href: "http://localhost:3000/startswith/reset"
-  //     });
-  //     return (
-  //       url.params.startsWith("startswith/reset") &&
-  //       url.params.startsWith("/startswith/reset") &&
-  //       !url.params.startsWith("/startswith/res") &&
-  //       !url.params.startsWith("startswith/test")
-  //     );
-  //   })
-  //   .isDeepEqual(function () {
-  //     return true;
-  //   });
-
-  // test("http://localhost:3000/starts/with/that (is)")
-  //   .this(function () {
-  //     let url = new URL({
-  //       href: "http://localhost:3000/starts/with/"
-  //     });
-  //     return (
-  //       url.params.is("starts/with/") &&
-  //       url.params.is("/starts/with/") &&
-  //       url.params.is("starts/with") &&
-  //       !url.params.is("starts/with/that")
-  //     );
-  //   })
-  //   .isDeepEqual(function () {
-  //     return true;
-  //   });
-
-  // test("http://localhost:3001/ (startsWith)")
-  //   .this(function () {
-  //     let url = new URL({
-  //       href : "http://localhost:3001/",
-  //     });
-  //     return url.params.startsWith("login");
-  //   })
-  //   .isDeepEqual(function () {
-  //     return false;
-  //   });
-
-  // test("http://localhost:3001/ (push)")
-  //   .this(function () {
-  //     let url = new URL({
-  //       href : "http://localhost:3001/",
-  //     });
-  //     url.params.push("login");
-  //     return url.toString();
-  //   })
-  //   .isDeepEqual(function () {
-  //     return "http://localhost:3001/login";
-  //   });
-
-  // test("http://localhost:3001/ (push object)")
-  //   .this(function () {
-  //     let url = new URL({
-  //       href : "http://localhost:3001/",
-  //     });
-
-  //     url.params.push({ name: "login" });
-
-  //     return [ url.toString(), url.params.name ];
-  //   })
-  //   .isDeepEqual(function () {
-  //     return [ "http://localhost:3001/login", "login" ];
-  //   });
-
-  // test("http://localhost:3001/ (unshift)")
-  //   .this(function () {
-  //     let url = new URL({
-  //       href : "http://localhost:3001/",
-  //     });
-  //     url.params.unshift("login");
-  //     return url.toString();
-  //   })
-  //   .isDeepEqual(function () {
-  //     return "http://localhost:3001/login";
-  //   });
-
-  // test("http://localhost:3001/ (unshift object)")
-  //   .this(function () {
-  //     let url = new URL({
-  //       href : "http://localhost:3001/",
-  //     });
-
-  //     url.params.unshift({ name: "login" });
-
-  //     return [ url.toString(), url.params.name ];
-  //   })
-  //   .isDeepEqual(function () {
-  //     return [ "http://localhost:3001/login", "login" ];
-  //   });
-
-  // test("http://localhost:3001/#my-hash (Object)")
-  //   .this(function () {
-  //     let url = new URL({
-  //       href : "http://localhost:3001/#my-hash",
-  //     });
-  //     return url;
-  //   })
-  //   .isDeepEqual(function () {
-  //     return {
-  //       location: {
-  //         origin       : "http://localhost:3001",
-  //         href         : "http://localhost:3001/#my-hash",
-  //         pathname     : "/",
-  //         hash         : "#my-hash",
-  //         params       : "/",
-  //         search       : "",
-  //         searchSchema : ""
-  //       },
-
-  //       origin: {
-  //         value: "http://localhost:3001"
-  //       },
-
-  //       search: {
-  //         schema     : {},
-  //         schemaKeys : []
-  //       },
-
-  //       params: {
-  //         path    : [],
-  //         params  : [],
-  //         isMatch : true
-  //       },
-
-  //       hash: {
-  //         value: "#my-hash"
-  //       },
-
-  //       isMatch: true
-  //     };
-  //   });
-
-  // test("http://localhost:3001/#my-hash (query hash)")
-  //   .this(function () {
-  //     let url = new URL({
-  //       href : "http://localhost:3001/#my-hash",
-  //     });
-
-  //     return url.location.hash;
-  //   })
-  //   .isDeepEqual(function () {
-  //     return "#my-hash";
-  //   });
-
-  // test("http://localhost:3001/#my-hash (hash toString)")
-  //   .this(function () {
-  //     let url = new URL({
-  //       href : "http://localhost:3001/#my-hash",
-  //     });
-
-  //     url.hash.value = "#changed-hash";
-  //     return url.toString();
-  //   })
-  //   .isDeepEqual(function () {
-  //     return "http://localhost:3001/#changed-hash";
-  //   });
-
-  // test("https://maps.googleapis.com/maps/api/place/textsearch/json (Copy)")
-  //   .this(function () {
-  //     let url  = new URL("https://maps.googleapis.com/maps/api/place/textsearch/json");
-  //     let copy = url.copy();
-
-  //     copy.search.query = "test";
-
-  //     return [
-  //       url.toString(),
-  //       copy.toString()
-  //     ];
-  //   })
-  //   .isDeepEqual(function () {
-  //     return [
-  //       "https://maps.googleapis.com/maps/api/place/textsearch/json",
-  //       "https://maps.googleapis.com/maps/api/place/textsearch/json?query=test"
-  //     ];
-  //   });
-
-  // test("/location/:lang match method")
-  //   .this(function () {
-  //     let url  = new URL("/location/:lang");
-  //     return [
-  //       url.test("/location/english"),
-  //       url.test("/loc/english"),
-  //       url.test(undefined),
-  //     ];
-  //   })
-  //   .isDeepEqual(function () {
-  //     return [ true, false, false ];
-  //   });
+  (0, _toString2.default)(test);
+  (0, _matching2.default)(test);
+  (0, _hash2.default)(test);
+  (0, _urlMethods2.default)(test);
 
   load();
 });
@@ -762,7 +225,7 @@ var URL = function () {
   _createClass(URL, [{
     key: "test",
     value: function test(location) {
-      return new URL(this.arguments.schema, location).isMatch;
+      return new URL(this.schema, location).isMatch;
     }
   }, {
     key: "setLocation",
@@ -846,10 +309,14 @@ var URL = function () {
 
       if ((typeof location === "undefined" ? "undefined" : _typeof(location)) === "object") {
         return this.getUrlOrigin(location.origin || location.href);
-      } else if (location && location.indexOf("http") === 0) {
+      } else if (location) {
         location = location.split("?")[0];
-        end = location.indexOf("/", location.indexOf("//") + 2);
-        origin = location.substring(0, end > -1 ? end : location.length);
+        if (location.indexOf("http") === 0) {
+          end = location.indexOf("/", location.indexOf("//") + 2);
+          origin = location.substring(0, end > -1 ? end : location.length);
+        } else {
+          origin = location.split("/")[0] ? location.split("/")[0] : undefined;
+        }
       }
 
       return origin;
@@ -883,7 +350,7 @@ var URL = function () {
   }, {
     key: "copy",
     value: function copy() {
-      var x = new URL(this.params.value, this.location.value);
+      var x = new URL(this.schema, this.location);
 
       for (var k in this.search) {
         if (this.search.hasOwnProperty(k)) {
@@ -959,12 +426,20 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Origin = function () {
+  _createClass(Origin, [{
+    key: "toExpression",
+    value: function toExpression(str) {
+      return new RegExp(str.replace(/\*/g, ".*?"));
+    }
+  }]);
+
   function Origin(schema, location) {
     _classCallCheck(this, Origin);
 
-    this.schema = schema.origin;
+    this.schema = schema.origin && this.toExpression(schema.origin);
     this.value = location.origin;
-    this.isMatch = this.schema === this.value;
+
+    this.isMatch = schema.origin ? this.schema.test(this.value) : location.origin === schema.origin;
   }
 
   _createClass(Origin, [{
@@ -1006,7 +481,8 @@ var reserved = {
   set: true,
   get: true,
   schema: true,
-  keys: true
+  keys: true,
+  isMatch: true
 };
 
 function filterValue(str) {
@@ -1039,10 +515,10 @@ function schemaObjectToString(key, value, schema) {
   value = value || {};
 
   for (var i = 0, n = schema.map.length; i < n; i++) {
-    if (schema.map[i].constant) {
-      temp[1].push(schema.map[i].constant);
-    } else if (value[schema.map[i]]) {
-      temp[1].push(value[schema.map[i]]);
+    if (schema.map[i].type === "constant") {
+      temp[1].push(schema.map[i].key);
+    } else if (value[schema.map[i].key]) {
+      temp[1].push(value[schema.map[i].key]);
     }
   }
 
@@ -1109,13 +585,22 @@ var Search = function () {
         if (props.delimiter) {
           props.value.split(props.delimiter).forEach(function (name) {
             if (name[0] === ":") {
-              props.map.push(name.substring(1));
+              props.map.push({
+                type: "variable",
+                key: name.substring(1)
+              });
             } else {
-              props.map.push({ constant: name });
+              props.map.push({
+                type: "constant",
+                key: name
+              });
             }
           });
         } else if (props.value && props.value[0] === ":") {
-          props.map.push(props.value.substring(1));
+          props.map.push({
+            type: "variable",
+            key: props.value.substring(1)
+          });
         }
 
         if (_this.keys.indexOf(props.key) === -1) {
@@ -1164,11 +649,11 @@ var Search = function () {
             if (ref.delimiter) {
               value.split(array[k].delimiter).forEach(function (value, i) {
                 _this2[array[k].key][pIndex] = _this2[array[k].key][pIndex] || {};
-                _this2[array[k].key][pIndex][ref.map[i]] = filterValue(value);
+                _this2[array[k].key][pIndex][ref.map[i].key] = filterValue(value);
               });
             } else {
               _this2[array[k].key][pIndex] = _this2[array[k].key][pIndex] || {};
-              _this2[array[k].key][pIndex][ref.map[0]] = filterValue(value);
+              _this2[array[k].key][pIndex][ref.map[0].key] = filterValue(value);
             }
           } else {
             _this2[array[k].key].push(filterValue(value));
@@ -1179,12 +664,17 @@ var Search = function () {
       object.forEach(function (props) {
         var ref = _this2.schema[props.key];
         _this2[props.key] = {};
-        if (ref.delimiter) {
-          props.value.split(ref.delimiter).forEach(function (value) {
-            _this2[props.key][ref.map[0]] = filterValue(value);
-          });
-        } else {
-          _this2[props.key][ref.map[0]] = filterValue(props.value);
+        if (ref) {
+          if (ref.delimiter) {
+            props.value.split(ref.delimiter).forEach(function (value, i) {
+              var element = ref.map[i];
+              if (element.type === "variable") {
+                _this2[props.key][element.key] = filterValue(value);
+              }
+            });
+          } else {
+            _this2[props.key][ref.map[0].key] = filterValue(props.value);
+          }
         }
       });
     }
@@ -1287,24 +777,42 @@ var Parameters = function () {
   function Parameters(schema, location) {
     _classCallCheck(this, Parameters);
 
+    var schemaValue = [];
+
     this.schema = pathnameToArray(schema.pathname);
     this.value = pathnameToArray(location.pathname);
     this.isMatch = !!location.pathname;
 
-    if (this.schema.length === 1 && this.schema[0] === "*") {
-      this.schema = this.value.map(function () {
-        return "*";
-      });
-    } else if (this.schema.length !== this.value.length) {
+    for (var i = this.schema.length - 1; i >= 0; i--) {
+      if (this.schema[i] === "*" && this.schema[i - 1] === "*") {
+        this.schema.splice(i, 1);
+      }
+    }
+
+    for (var _i = 0, n = this.schema.length; _i < n; _i++) {
+      if (this.schema[_i] === "*") {
+        var v = _i;
+        while (this.schema.slice(_i).indexOf(this.value[v]) === -1 && this.value[v]) {
+          schemaValue.push(this.value[v]);
+          v += 1;
+        }
+      } else {
+        schemaValue.push(this.schema[_i]);
+      }
+    }
+
+    this.schema = schemaValue;
+
+    if (this.schema.length !== this.value.length) {
       this.isMatch = false;
     }
 
-    for (var i = 0, n = this.schema.length; i < n; i++) {
-      if (this.schema[i][0] !== ":" && this.schema[i] !== "*" && this.schema[i] !== this.value[i]) {
+    for (var _i2 = 0, _n = this.schema.length; _i2 < _n; _i2++) {
+      if (this.schema[_i2][0] !== ":" && this.schema[_i2] !== "*" && this.schema[_i2] !== this.value[_i2]) {
         this.isMatch = false;
-      } else if (this.schema[i][0] === ":") {
-        maybeError(this, this.schema[i].slice(1));
-        this[this.schema[i].slice(1)] = this.value[i];
+      } else if (this.schema[_i2][0] === ":") {
+        maybeError(this, this.schema[_i2].slice(1));
+        this[this.schema[_i2].slice(1)] = this.value[_i2];
       }
     }
   }
@@ -1366,11 +874,20 @@ var Parameters = function () {
   }, {
     key: "toString",
     value: function toString() {
-      var length = this.value.length;
-      var query = new Array(length);
+      var query = [];
 
-      for (var i = 0; i < length; i++) {
-        query[i] = this.value[i];
+      if (this.schema.length && !this.value.length) {
+        for (var i = 0, n = this.schema.length; i < n; i++) {
+          if (this.schema[i][0] === ":") {
+            query.push(this[this.schema[i].slice(1)]);
+          } else {
+            query.push(this.schema[i]);
+          }
+        }
+      } else {
+        for (var _i3 = 0, _n2 = this.value.length; _i3 < _n2; _i3++) {
+          query[_i3] = this.value[_i3];
+        }
       }
 
       return "/" + query.join("/");
@@ -1798,6 +1315,95 @@ exports.default = function (test) {
   }).isEqual(function () {
     return true;
   });
+
+  test("http://localhost:3000/startswith/ (startsWith)").this(function () {
+    var url = new _index2.default(null, {
+      href: "http://localhost:3000/startswith/"
+    });
+    return url.params.startsWith("startswith");
+  }).isDeepEqual(function () {
+    return true;
+  });
+
+  test("/startswith (startsWith)").this(function () {
+    var url = new _index2.default(null, {
+      href: "/login"
+    });
+    return url.params.startsWith("/login");
+  }).isDeepEqual(function () {
+    return true;
+  });
+
+  test("http://localhost:3000/startswith/ (startsWith multiple)").this(function () {
+    var url = new _index2.default(null, {
+      href: "http://localhost:3000/startswith/reset"
+    });
+    return url.params.startsWith("startswith/reset") && url.params.startsWith("/startswith/reset") && !url.params.startsWith("/startswith/res") && !url.params.startsWith("startswith/test");
+  }).isDeepEqual(function () {
+    return true;
+  });
+
+  test("http://localhost:3000/starts/with/that (is)").this(function () {
+    var url = new _index2.default(null, {
+      href: "http://localhost:3000/starts/with/"
+    });
+    return url.params.is("starts/with/") && url.params.is("/starts/with/") && url.params.is("starts/with") && !url.params.is("starts/with/that");
+  }).isDeepEqual(function () {
+    return true;
+  });
+
+  test("http://localhost:3001/ (startsWith)").this(function () {
+    var url = new _index2.default(null, {
+      href: "http://localhost:3001/"
+    });
+    return url.params.startsWith("login");
+  }).isDeepEqual(function () {
+    return false;
+  });
+
+  test("http://localhost:3001/ (push)").this(function () {
+    var url = new _index2.default(null, {
+      href: "http://localhost:3001/"
+    });
+    url.params.push("login");
+    return url.toString();
+  }).isDeepEqual(function () {
+    return "http://localhost:3001/login";
+  });
+
+  test("http://localhost:3001/ (push object)").this(function () {
+    var url = new _index2.default(null, {
+      href: "http://localhost:3001/"
+    });
+
+    url.params.push({ name: "login" });
+
+    return [url.toString(), url.params.name];
+  }).isDeepEqual(function () {
+    return ["http://localhost:3001/login", "login"];
+  });
+
+  test("http://localhost:3001/ (unshift)").this(function () {
+    var url = new _index2.default(null, {
+      href: "http://localhost:3001/"
+    });
+    url.params.unshift("login");
+    return url.toString();
+  }).isDeepEqual(function () {
+    return "http://localhost:3001/login";
+  });
+
+  test("http://localhost:3001/ (unshift object)").this(function () {
+    var url = new _index2.default(null, {
+      href: "http://localhost:3001/"
+    });
+
+    url.params.unshift({ name: "login" });
+
+    return [url.toString(), url.params.name];
+  }).isDeepEqual(function () {
+    return ["http://localhost:3001/login", "login"];
+  });
 };
 
 var _index = __webpack_require__(0);
@@ -1910,7 +1516,10 @@ exports.default = function (test) {
             value: ":number",
             delimiter: false,
             type: "object",
-            map: ["number"]
+            map: [{
+              type: "variable",
+              key: "number"
+            }]
           }
         },
 
@@ -1931,6 +1540,74 @@ exports.default = function (test) {
       },
 
       isMatch: false
+    };
+  });
+
+  test("/post/:postID?origin=board+:category+:page").this(function () {
+    var l = new _index2.default("/post/:postID?origin=board+:category+:page", {
+      pathname: "/post/ezAYhlkuGEz",
+      search: "?origin=board+food+1"
+    });
+    return l;
+  }).isDeepEqual(function () {
+    return {
+      schema: {
+        origin: undefined,
+        href: "/post/:postID?origin=board+:category+:page",
+        pathname: "/post/:postID",
+        hash: "",
+        search: "?origin=board+:category+:page"
+      },
+      location: {
+        origin: undefined,
+        href: "/post/ezAYhlkuGEz",
+        pathname: "/post/ezAYhlkuGEz",
+        hash: "",
+        search: "?origin=board+food+1"
+      },
+      origin: {
+        schema: undefined,
+        value: undefined,
+        isMatch: true
+      },
+      search: {
+        isMatch: true,
+        schema: {
+          origin: {
+            key: "origin",
+            value: "board+:category+:page",
+            delimiter: "+",
+            type: "object",
+            map: [{
+              type: "constant",
+              key: "board"
+            }, {
+              type: "variable",
+              key: "category"
+            }, {
+              type: "variable",
+              key: "page"
+            }]
+          }
+        },
+        keys: ["origin"],
+        origin: {
+          "category": "food",
+          "page": 1
+        }
+      },
+      params: {
+        schema: ["post", ":postID"],
+        value: ["post", "ezAYhlkuGEz"],
+        isMatch: true,
+        postID: "ezAYhlkuGEz"
+      },
+      hash: {
+        schema: "",
+        value: "",
+        isMatch: true
+      },
+      isMatch: true
     };
   });
 
@@ -2081,7 +1758,10 @@ exports.default = function (test) {
             value: ":number",
             delimiter: false,
             type: "object",
-            map: ["number"]
+            map: [{
+              type: "variable",
+              key: "number"
+            }]
           }
         },
 
@@ -2142,7 +1822,10 @@ exports.default = function (test) {
             value: ":number",
             delimiter: false,
             type: "array",
-            map: ["number"]
+            map: [{
+              type: "variable",
+              key: "number"
+            }]
           }
         },
         keys: ["search"],
@@ -2200,7 +1883,13 @@ exports.default = function (test) {
             value: ":age+:gender",
             delimiter: "+",
             type: "array",
-            map: ["age", "gender"]
+            map: [{
+              type: "variable",
+              key: "age"
+            }, {
+              type: "variable",
+              key: "gender"
+            }]
           }
         },
         keys: ["person"],
@@ -2258,7 +1947,13 @@ exports.default = function (test) {
             value: ":age+:gender",
             delimiter: "+",
             type: "array",
-            map: ["age", "gender"]
+            map: [{
+              type: "variable",
+              key: "age"
+            }, {
+              type: "variable",
+              key: "gender"
+            }]
           }
         },
         keys: ["person"],
@@ -2280,6 +1975,42 @@ exports.default = function (test) {
       isMatch: true
     };
   });
+
+  test("http://localhost:3000/login?reset (default value)").this(function () {
+    var url = new _index2.default(null, "http://localhost:3000/login?reset");
+    return url.search.reset;
+  }).isDeepEqual(function () {
+    return 1;
+  });
+
+  test("http://localhost:3000/?string (search get)").this(function () {
+    var url = new _index2.default(null, {
+      href: "http://localhost:3000/?string"
+    });
+
+    url.search.string = "this will be an encoded string";
+    return url.search.get("string");
+  }).isDeepEqual(function () {
+    return "this will be an encoded string";
+  });
+
+  test("http://localhost:3000/?string (search get array)").this(function () {
+    var url = new _index2.default({
+      href: "http://localhost:3000/?string"
+    });
+
+    url.search.set({
+      string: "this will be an encoded string",
+      number: 2098
+    });
+
+    return url.search.get(["string", "number"]);
+  }).isDeepEqual(function () {
+    return {
+      string: "this will be an encoded string",
+      number: 2098
+    };
+  });
 };
 
 var _index = __webpack_require__(0);
@@ -2287,6 +2018,486 @@ var _index = __webpack_require__(0);
 var _index2 = _interopRequireDefault(_index);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _index = __webpack_require__(0);
+
+var _index2 = _interopRequireDefault(_index);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = function (test) {
+  test("http://www.google.com/ (toString)").this(function () {
+    var l = new _index2.default(null, "http://www.google.com/");
+    return l.toString();
+  }).isEqual(function () {
+    return "http://www.google.com/";
+  });
+
+  test("http://www.google.com/?search=2 (toString)").this(function () {
+    var l = new _index2.default(null, { href: "http://www.google.com/?search=2" });
+    l.search.search = 3;
+    return l.toString();
+  }).isEqual(function () {
+    return "http://www.google.com/?search=3";
+  });
+
+  test("http://www.google.com/?search[]=1&search[]=2 (toString)").this(function () {
+    var l = new _index2.default(null, { href: "http://www.google.com/?search[]=1&search[]=2" });
+    l.search.search[0] = 3;
+    return l.toString();
+  }).isEqual(function () {
+    return "http://www.google.com/?search[]=3&search[]=2";
+  });
+
+  test("http://www.google.com/?search[]=:number (toString)").this(function () {
+    var l = new _index2.default("http://www.google.com/?search[]=:number", {
+      href: "http://www.google.com/?search[]=1&search[]=2"
+    });
+    l.search.search[0].number = 3;
+    return l.toString();
+  }).isEqual(function () {
+    return "http://www.google.com/?search[]=3&search[]=2";
+  });
+
+  test("http://www.google.com/?search[]=:name,:gender (toString)").this(function () {
+    var l = new _index2.default("http://www.google.com/?search[]=:name,:gender", {
+      href: "http://www.google.com/?search[]=sean,male&search[]=sarah,female"
+    });
+    l.search.search[0].name = "John";
+    return l.toString();
+  }).isEqual(function () {
+    return "http://www.google.com/?search[]=John,male&search[]=sarah,female";
+  });
+
+  test("/user/:userID (string HREF)").this(function () {
+    var l = new _index2.default("/user/:userID", "/user/SeanJM");
+    return l.params.userID;
+  }).isEqual(function () {
+    return "SeanJM";
+  });
+
+  test("/user/:userID (object)").this(function () {
+    var l = new _index2.default("/user/:userID", { pathname: "/user/SeanJM" });
+    return l.params.userID;
+  }).isEqual(function () {
+    return "SeanJM";
+  });
+
+  test("/user/:userID?depth[]=:number+:id").this(function () {
+    var l = new _index2.default("/user/:userID?depth[]=:number+:id", {
+      pathname: "/user/SeanJM",
+      search: "?depth[]=0+o8jk&depth[]=1+99qE&depth[]=2+eBPs"
+    });
+    return l.search.depth;
+  }).isDeepEqual(function () {
+    return [{
+      number: 0,
+      id: "o8jk"
+    }, {
+      number: 1,
+      id: "99qE"
+    }, {
+      number: 2,
+      id: "eBPs"
+    }];
+  });
+
+  test("/post/:postID?origin=... (manipulating a mapped object)").this(function () {
+    var l = new _index2.default("/post/:postID?origin=board+:category+:page", {
+      pathname: "/post/ezAYhlkuGEz",
+      search: "?origin=board+food+1"
+    });
+    l.search.origin.category = "fitness";
+    l.search.origin.board = "unchanged";
+    return l.toString();
+  }).isEqual(function () {
+    return "/post/ezAYhlkuGEz?origin=board+fitness+1";
+  });
+
+  test("Empty").this(function () {
+    var l = new _index2.default();
+    return l.toString();
+  }).isEqual(function () {
+    return "/";
+  });
+
+  test("/board/:category?page").this(function () {
+    var back = new _index2.default("/user/:userID/:section?page");
+    back.params.userID = "98374jf";
+    back.params.section = "comments";
+    back.search.page = 1;
+    return back.toString();
+  }).isEqual(function () {
+    return "/user/98374jf/comments?page=1";
+  });
+
+  test("http://localhost:3000/login?reset (toString)").this(function () {
+    var url = new _index2.default(null, {
+      href: "http://localhost:3000/login?reset"
+    });
+    return url.toString();
+  }).isDeepEqual(function () {
+    return "http://localhost:3000/login?reset=1";
+  });
+
+  test("http://localhost:3000/?string (search set)").this(function () {
+    var url = new _index2.default(null, {
+      href: "http://localhost:3000/?string"
+    });
+
+    url.search.set({
+      string: "this will be an encoded string"
+    });
+
+    return url.toString();
+  }).isDeepEqual(function () {
+    return "http://localhost:3000/?string=this%20will%20be%20an%20encoded%20string";
+  });
+
+  test("http://localhost:3000/?string (set pathname)").this(function () {
+    var url = new _index2.default(null, {
+      href: "http://localhost:3000/?string"
+    });
+
+    url.set({
+      pathname: "/path/name"
+    });
+
+    return url.toString();
+  }).isDeepEqual(function () {
+    return "http://localhost:3000/path/name?string=1";
+  });
+
+  test("http://localhost:3000/?string (set search)").this(function () {
+    var url = new _index2.default(null, {
+      href: "http://localhost:3000/login"
+    });
+
+    url.set({
+      search: "?search=1&cat=fluffy&dog=sam"
+    });
+
+    return url.toString();
+  }).isDeepEqual(function () {
+    return "http://localhost:3000/login?search=1&cat=fluffy&dog=sam";
+  });
+};
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _index = __webpack_require__(0);
+
+var _index2 = _interopRequireDefault(_index);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = function (test) {
+  test("/a vs /a/b (does not match)").this(function () {
+    var a = new _index2.default("/:a", "/a");
+    var b = new _index2.default("/:a", "/a/b");
+    return a.isMatch && !b.isMatch;
+  }).isEqual(function () {
+    return true;
+  });
+
+  test("*?origin=user+:userID+:section+:page").this(function () {
+    var l = new _index2.default("*?origin=user+:userID+:section+:page", "http://www.domain.com/?origin=user+98fjhd+all+1");
+    return l;
+  }).isDeepEqual(function () {
+    return {
+      schema: {
+        origin: "*",
+        href: "*?origin=user+:userID+:section+:page",
+        pathname: "/",
+        hash: "",
+        search: "?origin=user+:userID+:section+:page"
+      },
+      location: {
+        origin: "http://www.domain.com",
+        href: "http://www.domain.com/?origin=user+98fjhd+all+1",
+        pathname: "/",
+        hash: "",
+        search: "?origin=user+98fjhd+all+1"
+      },
+      origin: {
+        schema: /.*?/,
+        value: "http://www.domain.com",
+        isMatch: true
+      },
+      search: {
+        isMatch: true,
+        schema: {
+          origin: {
+            key: "origin",
+            value: "user+:userID+:section+:page",
+            delimiter: "+",
+            type: "object",
+            map: [{
+              type: "constant",
+              key: "user"
+            }, {
+              type: "variable",
+              key: "userID"
+            }, {
+              type: "variable",
+              key: "section"
+            }, {
+              type: "variable",
+              key: "page"
+            }]
+          }
+        },
+        keys: ["origin"],
+        origin: {
+          userID: "98fjhd",
+          section: "all",
+          page: 1
+        }
+      },
+      params: {
+        schema: [],
+        value: [],
+        isMatch: true
+      },
+      hash: {
+        schema: "",
+        value: "",
+        isMatch: true
+      },
+      isMatch: true
+    };
+  });
+
+  test("*?origin=user+:userID+:section+:page (pathname, search)").this(function () {
+    var l = new _index2.default("*/?origin=user+:userID+:section+:page", {
+      pathname: "/post/p398dfjkj",
+      search: "?origin=user+98fjhd+all+1"
+    });
+    return l;
+  }).isDeepEqual(function () {
+    return {
+      schema: {
+        origin: "*",
+        href: "*/?origin=user+:userID+:section+:page",
+        pathname: "/",
+        hash: "",
+        search: "?origin=user+:userID+:section+:page"
+      },
+      location: {
+        href: "/post/p398dfjkj",
+        pathname: "/post/p398dfjkj",
+        hash: "",
+        search: "?origin=user+98fjhd+all+1"
+      },
+      origin: {
+        schema: {},
+        isMatch: true
+      },
+      search: {
+        isMatch: true,
+        schema: {
+          origin: {
+            key: "origin",
+            value: "user+:userID+:section+:page",
+            delimiter: "+",
+            type: "object",
+            map: [{
+              type: "constant",
+              key: "user"
+            }, {
+              type: "variable",
+              key: "userID"
+            }, {
+              type: "variable",
+              key: "section"
+            }, {
+              type: "variable",
+              key: "page"
+            }]
+          }
+        },
+        keys: ["origin"],
+        origin: {
+          userID: "98fjhd",
+          section: "all",
+          page: 1
+        }
+      },
+      params: {
+        schema: [],
+        value: ["post", "p398dfjkj"],
+        isMatch: false
+      },
+      hash: {
+        schema: "",
+        value: "",
+        isMatch: true
+      },
+      isMatch: false
+    };
+  });
+
+  test("/*/ (pathname, search)").this(function () {
+    var l = new _index2.default("/*/", "/post/p398dfjkj");
+    return l;
+  }).isDeepEqual(function () {
+    return {
+      schema: {
+        origin: undefined,
+        href: "/*/",
+        pathname: "/*/",
+        hash: "",
+        search: ""
+      },
+      location: {
+        href: "/post/p398dfjkj",
+        pathname: "/post/p398dfjkj",
+        hash: "",
+        search: ""
+      },
+      origin: {
+        schema: undefined,
+        isMatch: true
+      },
+      search: {
+        isMatch: true,
+        schema: {},
+        keys: []
+      },
+      params: {
+        schema: ["post", "p398dfjkj"],
+        value: ["post", "p398dfjkj"],
+        isMatch: true
+      },
+      hash: {
+        schema: "",
+        value: "",
+        isMatch: true
+      },
+      isMatch: true
+    };
+  });
+};
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _index = __webpack_require__(0);
+
+var _index2 = _interopRequireDefault(_index);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = function (test) {
+  test("http://localhost:3001/#my-hash (Object)").this(function () {
+    var url = new _index2.default(null, {
+      href: "http://localhost:3001/#my-hash"
+    });
+    return url;
+  }).isDeepEqual(function () {
+    return {
+      schema: {},
+      location: {
+        origin: "http://localhost:3001",
+        href: "http://localhost:3001/#my-hash",
+        pathname: "/",
+        hash: "#my-hash",
+        search: ""
+      },
+      origin: {
+        value: "http://localhost:3001",
+        isMatch: false
+      },
+      search: {
+        isMatch: false,
+        schema: {},
+        keys: []
+      },
+      params: {
+        schema: [],
+        value: [],
+        isMatch: true
+      },
+      hash: {
+        value: "#my-hash",
+        isMatch: false
+      },
+      isMatch: false
+    };
+  });
+
+  test("http://localhost:3001/#my-hash (query hash)").this(function () {
+    var url = new _index2.default(null, {
+      href: "http://localhost:3001/#my-hash"
+    });
+
+    return url.location.hash;
+  }).isDeepEqual(function () {
+    return "#my-hash";
+  });
+
+  test("http://localhost:3001/#my-hash (hash toString)").this(function () {
+    var url = new _index2.default(null, {
+      href: "http://localhost:3001/#my-hash"
+    });
+
+    url.hash.value = "#changed-hash";
+    return url.toString();
+  }).isDeepEqual(function () {
+    return "http://localhost:3001/#changed-hash";
+  });
+};
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _index = __webpack_require__(0);
+
+var _index2 = _interopRequireDefault(_index);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = function (test) {
+  test("https://maps.googleapis.com/maps/api/place/textsearch/json (Copy)").this(function () {
+    var url = new _index2.default(null, "https://maps.googleapis.com/maps/api/place/textsearch/json");
+    var copy = url.copy();
+
+    url.search.query = "test";
+
+    console.log(copy.toString());
+
+    return [url.toString(), copy.toString()];
+  }).isDeepEqual(function () {
+    return ["https://maps.googleapis.com/maps/api/place/textsearch/json?query=test", "https://maps.googleapis.com/maps/api/place/textsearch/json"];
+  });
+
+  test("/location/:lang match method").this(function () {
+    var url = new _index2.default("/location/:lang");
+    return [url.test("/location/english"), url.test("/loc/english"), url.test(undefined)];
+  }).isDeepEqual(function () {
+    return [true, false, false];
+  });
+};
 
 /***/ })
 /******/ ]);

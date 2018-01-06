@@ -166,4 +166,121 @@ export default function (test) {
     .isEqual(function () {
       return true;
     });
+
+  test("http://localhost:3000/startswith/ (startsWith)")
+    .this(function () {
+      let url = new URL(null, {
+        href: "http://localhost:3000/startswith/"
+      });
+      return url.params.startsWith("startswith");
+    })
+    .isDeepEqual(function () {
+      return true;
+    });
+
+  test("/startswith (startsWith)")
+    .this(function () {
+      let url = new URL(null, {
+        href: "/login"
+      });
+      return url.params.startsWith("/login");
+    })
+    .isDeepEqual(function () {
+      return true;
+    });
+
+  test("http://localhost:3000/startswith/ (startsWith multiple)")
+    .this(function () {
+      let url = new URL(null, {
+        href: "http://localhost:3000/startswith/reset"
+      });
+      return (
+        url.params.startsWith("startswith/reset") &&
+        url.params.startsWith("/startswith/reset") &&
+        !url.params.startsWith("/startswith/res") &&
+        !url.params.startsWith("startswith/test")
+      );
+    })
+    .isDeepEqual(function () {
+      return true;
+    });
+
+  test("http://localhost:3000/starts/with/that (is)")
+    .this(function () {
+      let url = new URL(null, {
+        href: "http://localhost:3000/starts/with/"
+      });
+      return (
+        url.params.is("starts/with/") &&
+        url.params.is("/starts/with/") &&
+        url.params.is("starts/with") &&
+        !url.params.is("starts/with/that")
+      );
+    })
+    .isDeepEqual(function () {
+      return true;
+    });
+
+  test("http://localhost:3001/ (startsWith)")
+    .this(function () {
+      let url = new URL(null, {
+        href : "http://localhost:3001/",
+      });
+      return url.params.startsWith("login");
+    })
+    .isDeepEqual(function () {
+      return false;
+    });
+
+  test("http://localhost:3001/ (push)")
+    .this(function () {
+      let url = new URL(null, {
+        href : "http://localhost:3001/",
+      });
+      url.params.push("login");
+      return url.toString();
+    })
+    .isDeepEqual(function () {
+      return "http://localhost:3001/login";
+    });
+
+  test("http://localhost:3001/ (push object)")
+    .this(function () {
+      let url = new URL(null, {
+        href : "http://localhost:3001/",
+      });
+
+      url.params.push({ name: "login" });
+
+      return [ url.toString(), url.params.name ];
+    })
+    .isDeepEqual(function () {
+      return [ "http://localhost:3001/login", "login" ];
+    });
+
+  test("http://localhost:3001/ (unshift)")
+    .this(function () {
+      let url = new URL(null, {
+        href : "http://localhost:3001/",
+      });
+      url.params.unshift("login");
+      return url.toString();
+    })
+    .isDeepEqual(function () {
+      return "http://localhost:3001/login";
+    });
+
+  test("http://localhost:3001/ (unshift object)")
+    .this(function () {
+      let url = new URL(null, {
+        href : "http://localhost:3001/",
+      });
+
+      url.params.unshift({ name: "login" });
+
+      return [ url.toString(), url.params.name ];
+    })
+    .isDeepEqual(function () {
+      return [ "http://localhost:3001/login", "login" ];
+    });
 }

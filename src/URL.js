@@ -22,7 +22,7 @@ export default class URL {
   }
 
   test(location) {
-    return new URL(this.arguments.schema, location).isMatch;
+    return new URL(this.schema, location).isMatch;
   }
 
   setLocation(location) {

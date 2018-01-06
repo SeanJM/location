@@ -97,7 +97,10 @@ export default function (test) {
               value     : ":number",
               delimiter : false,
               type      : "object",
-              map       : [ "number" ]
+              map       : [{
+                type : "variable",
+                key  : "number"
+              }]
             }
           },
 
@@ -118,6 +121,78 @@ export default function (test) {
         },
 
         isMatch : false
+      };
+    });
+
+  test("/post/:postID?origin=board+:category+:page")
+    .this(function () {
+      const l = new URL("/post/:postID?origin=board+:category+:page", {
+        pathname: "/post/ezAYhlkuGEz",
+        search  : "?origin=board+food+1"
+      });
+      return l;
+    })
+    .isDeepEqual(function () {
+      return {
+        schema: {
+          origin   : undefined,
+          href     : "/post/:postID?origin=board+:category+:page",
+          pathname : "/post/:postID",
+          hash     : "",
+          search   : "?origin=board+:category+:page"
+        },
+        location: {
+          origin   : undefined,
+          href     : "/post/ezAYhlkuGEz",
+          pathname : "/post/ezAYhlkuGEz",
+          hash     : "",
+          search   : "?origin=board+food+1"
+        },
+        origin: {
+          schema  : undefined,
+          value   : undefined,
+          isMatch : true
+        },
+        search: {
+          isMatch : true,
+          schema  : {
+            origin: {
+              key       : "origin",
+              value     : "board+:category+:page",
+              delimiter : "+",
+              type      : "object",
+              map: [{
+                type : "constant",
+                key  : "board"
+              }, {
+                type : "variable",
+                key  : "category"
+              }, {
+                type : "variable",
+                key  : "page"
+              }]
+            }
+          },
+          keys : [
+            "origin"
+          ],
+          origin : {
+            "category" : "food",
+            "page"     : 1
+          }
+        },
+        params: {
+          schema  : [ "post", ":postID" ],
+          value   : [ "post", "ezAYhlkuGEz" ],
+          isMatch : true,
+          postID  : "ezAYhlkuGEz"
+        },
+        hash: {
+          schema  : "",
+          value   : "",
+          isMatch : true
+        },
+        isMatch : true
       };
     });
 
@@ -277,7 +352,10 @@ export default function (test) {
               value     : ":number",
               delimiter : false,
               type      : "object",
-              map       : [ "number" ]
+              map       : [{
+                type : "variable",
+                key  : "number"
+              }]
             }
           },
 
@@ -343,7 +421,10 @@ export default function (test) {
               value     : ":number",
               delimiter : false,
               type      : "array",
-              map       : [ "number" ]
+              map       : [{
+                type : "variable",
+                key: "number"
+              }]
             }
           },
           keys    : [ "search" ],
@@ -409,7 +490,13 @@ export default function (test) {
               value     : ":age+:gender",
               delimiter : "+",
               type      : "array",
-              map       : [ "age", "gender" ]
+              map       : [{
+                type : "variable",
+                key : "age"
+              }, {
+                type : "variable",
+                key : "gender"
+              }]
             }
           },
           keys    : [ "person" ],
@@ -475,7 +562,13 @@ export default function (test) {
               value     : ":age+:gender",
               delimiter : "+",
               type      : "array",
-              map       : [ "age", "gender" ]
+              map       : [{
+                type : "variable",
+                key : "age"
+              }, {
+                type : "variable",
+                key :  "gender"
+              }]
             }
           },
           keys    : [ "person" ],
@@ -498,6 +591,48 @@ export default function (test) {
         },
 
         isMatch: true
+      };
+    });
+
+  test("http://localhost:3000/login?reset (default value)")
+    .this(function () {
+      let url = new URL(null, "http://localhost:3000/login?reset");
+      return url.search.reset;
+    })
+    .isDeepEqual(function () {
+      return 1;
+    });
+
+  test("http://localhost:3000/?string (search get)")
+    .this(function () {
+      let url = new URL(null, {
+        href: "http://localhost:3000/?string"
+      });
+
+      url.search.string = "this will be an encoded string";
+      return url.search.get("string");
+    })
+    .isDeepEqual(function () {
+      return "this will be an encoded string";
+    });
+
+  test("http://localhost:3000/?string (search get array)")
+    .this(function () {
+      let url = new URL({
+        href: "http://localhost:3000/?string"
+      });
+
+      url.search.set({
+        string : "this will be an encoded string",
+        number : 2098
+      });
+
+      return url.search.get([ "string", "number" ]);
+    })
+    .isDeepEqual(function () {
+      return {
+        string : "this will be an encoded string",
+        number : 2098
       };
     });
 }
