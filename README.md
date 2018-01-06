@@ -15,8 +15,8 @@ const location = new URL(Schema, Location);
 ##### Arguments
 Argument|Type
 -|-
-Schema|UrlObject\|String
-Location|UrlObject\|String
+Schema|UrlObject\|String\|null
+Location|UrlObject\|String\|null
 
 ##### UrlObject
 Property|Type|Optional

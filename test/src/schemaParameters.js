@@ -157,4 +157,13 @@ export default function (test) {
         isMatch : false
       };
     });
+
+  test("http://www.google.com/:x/:y (contains)")
+    .this(function () {
+      let l = new URL(null, "http://www.google.com/cats/dogs");
+      return l.params.contains("/dogs") && l.params.contains("/dogs/") && !l.params.contains("/fish");
+    })
+    .isEqual(function () {
+      return true;
+    });
 }

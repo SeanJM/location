@@ -5,8 +5,8 @@ import Hash       from "./Hash";
 
 export default class URL {
   constructor(schema, location) {
-    this.setSchema(schema);
-    this.setLocation(location);
+    this.setSchema(schema || {});
+    this.setLocation(location || {});
 
     this.origin  = new Origin(this.schema, this.location);
     this.search  = new Search(this.schema, this.location);

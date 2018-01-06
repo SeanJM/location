@@ -85,6 +85,12 @@ export default class Parameters {
     return str.indexOf(path) === 0 && (str[n] === "/" || !str[n + 1]);
   }
 
+  contains(value) {
+    const str  = this.toString();
+    const path = "/" + pathnameToArray(value).join("/");
+    return str.indexOf(path) > -1;
+  }
+
   is(value) {
     return this.toString() === "/" + pathnameToArray(value).join("/");
   }

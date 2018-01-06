@@ -1,9 +1,10 @@
 const path           = require("path");
 const UglifyJSPlugin = require("uglifyjs-webpack-plugin");
+const nodeExternals = require("webpack-node-externals");
 const IS_PRODUCTION  = process.env.NODE_ENV === "production";
 
 module.exports = [{
-  entry : "./src/index.js",
+  entry  : "./src/index.js",
   target : "node",
 
   output : {
@@ -32,6 +33,7 @@ module.exports = [{
     ? [ new UglifyJSPlugin() ]
     : undefined,
 }, {
+  externals : [ nodeExternals() ],
   entry : "./test/src/index.js",
   target : "node",
   devtool : "sourcemap",
@@ -45,6 +47,7 @@ module.exports = [{
   module: {
     rules: [{
       test : /\.js$/,
+      exclude : /node_modules/,
       use  : {
         loader : "babel-loader",
         options: {
