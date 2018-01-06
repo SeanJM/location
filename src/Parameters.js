@@ -20,6 +20,19 @@ function maybeError(self, key) {
   }
 }
 
+function schemaType(string) {
+  if (string[0] === ":") {
+    return {
+      type : "variable",
+      key : string.slice(1)
+    };
+  }
+  return {
+    type : "constant",
+    key  : string
+  };
+}
+
 export default class Parameters {
   constructor(schema, location) {
     var schemaValue = [];
@@ -38,11 +51,15 @@ export default class Parameters {
       if (this.schema[i] === "*") {
         let v = i;
         while (this.schema.slice(i).indexOf(this.value[v]) === -1 && this.value[v]) {
-          schemaValue.push(this.value[v]);
+          schemaValue.push(
+            schemaType(this.value[v])
+          );
           v += 1;
         }
       } else {
-        schemaValue.push(this.schema[i]);
+        schemaValue.push(
+          schemaType(this.schema[i])
+        );
       }
     }
 
@@ -54,14 +71,14 @@ export default class Parameters {
 
     for (let i = 0, n = this.schema.length; i < n; i++) {
       if (
-        this.schema[i][0] !== ":" &&
-        this.schema[i]    !== "*" &&
-        this.schema[i]    !== this.value[i]
+        this.schema[i].type !== "variable" &&
+        this.schema[i].key  !== "*" &&
+        this.schema[i].key  !== this.value[i]
       ) {
         this.isMatch = false;
-      } else if (this.schema[i][0] === ":") {
-        maybeError(this, this.schema[i].slice(1));
-        this[this.schema[i].slice(1)] = this.value[i];
+      } else if (this.schema[i].type === "variable") {
+        maybeError(this, this.schema[i].key.slice(1));
+        this[this.schema[i].key] = this.value[i];
       }
     }
   }
@@ -71,11 +88,11 @@ export default class Parameters {
       for (var k in value) {
         maybeError(this, k);
         this[k] = value[k];
-        this.schema.push(value[k]);
+        this.schema.push(schemaType(value[k]));
         this.value.push(value[k]);
       }
     } else {
-      this.schema.push(value);
+      this.schema.push(schemaType(value));
       this.value.push(value);
     }
 
@@ -87,11 +104,11 @@ export default class Parameters {
       for (var k in value) {
         maybeError(this, k);
         this[k] = value[k];
-        this.schema.unshift(value[k]);
+        this.schema.unshift(schemaType(value[k]));
         this.value.unshift(value[k]);
       }
     } else {
-      this.schema.unshift(value);
+      this.schema.unshift(schemaType(value));
       this.value.unshift(value);
     }
 
@@ -118,12 +135,12 @@ export default class Parameters {
   toString() {
     const query  = [];
 
-    if (this.schema.length && !this.value.length) {
+    if (this.schema.length) {
       for (let i = 0, n = this.schema.length; i < n; i++) {
-        if (this.schema[i][0] === ":") {
-          query.push(this[this.schema[i].slice(1)]);
+        if (this.schema[i].type === "variable") {
+          query.push(this[this.schema[i].key]);
         } else {
-          query.push(this.schema[i]);
+          query.push(this.schema[i].key);
         }
       }
     } else {
