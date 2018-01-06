@@ -34,8 +34,8 @@ module.exports = [{
     : undefined,
 }, {
   externals : [ nodeExternals() ],
-  entry : "./test/src/index.js",
-  target : "node",
+  entry   : "./test/src/index.js",
+  target  : "node",
   devtool : "sourcemap",
 
   output : {
