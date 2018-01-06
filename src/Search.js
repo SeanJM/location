@@ -43,10 +43,10 @@ function schemaObjectToString(key, value, schema) {
   value = value || {};
 
   for (var i = 0, n = schema.map.length; i < n; i++) {
-    if (schema.map[i].constant) {
-      temp[1].push(schema.map[i].constant);
+    if (schema.map[i].type === "constant") {
+      temp[1].push(schema.map[i].key);
     } else if (value[schema.map[i]]) {
-      temp[1].push(value[schema.map[i]]);
+      temp[1].push(value[schema.map[i].key]);
     }
   }
 
@@ -109,13 +109,22 @@ export default class Search {
       if (props.delimiter) {
         props.value.split(props.delimiter).forEach(name => {
           if (name[0] === ":") {
-            props.map.push(name.substring(1));
+            props.map.push({
+              type : "variable",
+              key  : name.substring(1)
+            });
           } else {
-            props.map.push({ constant : name });
+            props.map.push({
+              type : "constant",
+              key : name
+            });
           }
         });
       } else if (props.value && props.value[0] === ":") {
-        props.map.push(props.value.substring(1));
+        props.map.push({
+          type : "variable",
+          key  : props.value.substring(1)
+        });
       }
 
       if (this.keys.indexOf(props.key) === -1) {
