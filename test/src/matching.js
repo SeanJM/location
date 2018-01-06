@@ -190,10 +190,13 @@ module.exports = function (test) {
           keys    : []
         },
         params : {
-          schema : [
-            "post",
-            "p398dfjkj"
-          ],
+          schema : [{
+            type: "constant",
+            key : "post"
+          }, {
+            type : "constant",
+            key  : "p398dfjkj"
+          }],
           value : [
             "post",
             "p398dfjkj"

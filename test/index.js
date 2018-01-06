@@ -114,10 +114,6 @@ var _tinyTest = __webpack_require__(3);
 
 var _tinyTest2 = _interopRequireDefault(_tinyTest);
 
-var _index = __webpack_require__(0);
-
-var _index2 = _interopRequireDefault(_index);
-
 var _schemaStringEmptyLocation = __webpack_require__(10);
 
 var _schemaStringEmptyLocation2 = _interopRequireDefault(_schemaStringEmptyLocation);
@@ -157,12 +153,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   (0, _schemaObjectEmptyLocation2.default)(test);
   (0, _schemaParameters2.default)(test);
   (0, _schemaSearch2.default)(test);
-
   (0, _toString2.default)(test);
   (0, _matching2.default)(test);
   (0, _hash2.default)(test);
   (0, _urlMethods2.default)(test);
-
   load();
 });
 
@@ -773,6 +767,19 @@ function maybeError(self, key) {
   }
 }
 
+function schemaType(string) {
+  if (string[0] === ":") {
+    return {
+      type: "variable",
+      key: string.slice(1)
+    };
+  }
+  return {
+    type: "constant",
+    key: string
+  };
+}
+
 var Parameters = function () {
   function Parameters(schema, location) {
     _classCallCheck(this, Parameters);
@@ -793,11 +800,11 @@ var Parameters = function () {
       if (this.schema[_i] === "*") {
         var v = _i;
         while (this.schema.slice(_i).indexOf(this.value[v]) === -1 && this.value[v]) {
-          schemaValue.push(this.value[v]);
+          schemaValue.push(schemaType(this.value[v]));
           v += 1;
         }
       } else {
-        schemaValue.push(this.schema[_i]);
+        schemaValue.push(schemaType(this.schema[_i]));
       }
     }
 
@@ -808,11 +815,11 @@ var Parameters = function () {
     }
 
     for (var _i2 = 0, _n = this.schema.length; _i2 < _n; _i2++) {
-      if (this.schema[_i2][0] !== ":" && this.schema[_i2] !== "*" && this.schema[_i2] !== this.value[_i2]) {
+      if (this.schema[_i2].type !== "variable" && this.schema[_i2].key !== "*" && this.schema[_i2].key !== this.value[_i2]) {
         this.isMatch = false;
-      } else if (this.schema[_i2][0] === ":") {
-        maybeError(this, this.schema[_i2].slice(1));
-        this[this.schema[_i2].slice(1)] = this.value[_i2];
+      } else if (this.schema[_i2].type === "variable") {
+        maybeError(this, this.schema[_i2].key.slice(1));
+        this[this.schema[_i2].key] = this.value[_i2];
       }
     }
   }
@@ -824,11 +831,11 @@ var Parameters = function () {
         for (var k in value) {
           maybeError(this, k);
           this[k] = value[k];
-          this.schema.push(value[k]);
+          this.schema.push(schemaType(value[k]));
           this.value.push(value[k]);
         }
       } else {
-        this.schema.push(value);
+        this.schema.push(schemaType(value));
         this.value.push(value);
       }
 
@@ -841,11 +848,11 @@ var Parameters = function () {
         for (var k in value) {
           maybeError(this, k);
           this[k] = value[k];
-          this.schema.unshift(value[k]);
+          this.schema.unshift(schemaType(value[k]));
           this.value.unshift(value[k]);
         }
       } else {
-        this.schema.unshift(value);
+        this.schema.unshift(schemaType(value));
         this.value.unshift(value);
       }
 
@@ -876,12 +883,12 @@ var Parameters = function () {
     value: function toString() {
       var query = [];
 
-      if (this.schema.length && !this.value.length) {
+      if (this.schema.length) {
         for (var i = 0, n = this.schema.length; i < n; i++) {
-          if (this.schema[i][0] === ":") {
-            query.push(this[this.schema[i].slice(1)]);
+          if (this.schema[i].type === "variable") {
+            query.push(this[this.schema[i].key]);
           } else {
-            query.push(this.schema[i]);
+            query.push(this.schema[i].key);
           }
         }
       } else {
@@ -1192,7 +1199,7 @@ exports.default = function (test) {
       },
 
       params: {
-        schema: [":x"],
+        schema: [{ type: "variable", key: "x" }],
         value: ["cat"],
         x: "cat",
         isMatch: true
@@ -1242,7 +1249,13 @@ exports.default = function (test) {
       },
 
       params: {
-        schema: [":x", ":y"],
+        schema: [{
+          type: "variable",
+          key: "x"
+        }, {
+          type: "variable",
+          key: "y"
+        }],
         value: ["cats", "dogs"],
         x: "cats",
         y: "dogs",
@@ -1293,7 +1306,13 @@ exports.default = function (test) {
       },
 
       params: {
-        schema: [":x", ":y"],
+        schema: [{
+          type: "variable",
+          key: "x"
+        }, {
+          type: "variable",
+          key: "y"
+        }],
         value: ["cats"],
         x: "cats",
         isMatch: false
@@ -1597,7 +1616,13 @@ exports.default = function (test) {
         }
       },
       params: {
-        schema: ["post", ":postID"],
+        schema: [{
+          type: "constant",
+          key: "post"
+        }, {
+          type: "variable",
+          key: "postID"
+        }],
         value: ["post", "ezAYhlkuGEz"],
         isMatch: true,
         postID: "ezAYhlkuGEz"
@@ -2377,7 +2402,13 @@ module.exports = function (test) {
         keys: []
       },
       params: {
-        schema: ["post", "p398dfjkj"],
+        schema: [{
+          type: "constant",
+          key: "post"
+        }, {
+          type: "constant",
+          key: "p398dfjkj"
+        }],
         value: ["post", "p398dfjkj"],
         isMatch: true
       },

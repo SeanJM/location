@@ -182,7 +182,13 @@ export default function (test) {
           }
         },
         params: {
-          schema  : [ "post", ":postID" ],
+          schema  : [{
+            type : "constant",
+            key  : "post",
+          }, {
+            type : "variable",
+            key  : "postID"
+          }],
           value   : [ "post", "ezAYhlkuGEz" ],
           isMatch : true,
           postID  : "ezAYhlkuGEz"

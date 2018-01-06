@@ -1,5 +1,4 @@
 import tinytest from "tiny-test";
-import URL      from "../../src/index.js";
 import schemaStringEmptyLocation from "./schemaStringEmptyLocation";
 import schemaObjectEmptyLocation from "./schemaObjectEmptyLocation";
 import schemaParameters from "./schemaParameters";
@@ -14,11 +13,9 @@ tinytest(function (test, load) {
   schemaObjectEmptyLocation(test);
   schemaParameters(test);
   schemaSearch(test);
-
   toString(test);
   matching(test);
   hash(test);
   urlMethods(test);
-
   load();
 });

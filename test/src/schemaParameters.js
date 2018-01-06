@@ -37,7 +37,7 @@ export default function (test) {
         },
 
         params : {
-          schema  : [ ":x" ],
+          schema  : [{ type : "variable", key: "x" }],
           value   : [ "cat" ],
           x       : "cat",
           isMatch : true
@@ -89,7 +89,13 @@ export default function (test) {
         },
 
         params : {
-          schema  : [ ":x", ":y" ],
+          schema  : [{
+            type : "variable",
+            key  : "x"
+          }, {
+            type : "variable",
+            key  : "y"
+          }],
           value   : [ "cats", "dogs" ],
           x       : "cats",
           y       : "dogs",
@@ -142,7 +148,13 @@ export default function (test) {
         },
 
         params : {
-          schema  : [ ":x", ":y" ],
+          schema  : [{
+            type : "variable",
+            key: "x"
+          }, {
+            type: "variable",
+            key: "y"
+          }],
           value   : [ "cats" ],
           x       : "cats",
           isMatch : false
