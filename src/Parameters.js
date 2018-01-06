@@ -22,13 +22,33 @@ function maybeError(self, key) {
 
 export default class Parameters {
   constructor(schema, location) {
-    this.schema  = pathnameToArray(schema.pathname);
-    this.value   = pathnameToArray(location.pathname);
-    this.isMatch = !!location.pathname;
+    var schemaValue = [];
 
-    if (this.schema.length === 1 && this.schema[0] === "*") {
-      this.schema = this.value.map(() => "*");
-    } else if (this.schema.length !== this.value.length) {
+    this.schema     = pathnameToArray(schema.pathname);
+    this.value      = pathnameToArray(location.pathname);
+    this.isMatch    = !!location.pathname;
+
+    for (let i = this.schema.length - 1; i >= 0; i--) {
+      if (this.schema[i] === "*" && this.schema[i - 1] === "*") {
+        this.schema.splice(i, 1);
+      }
+    }
+
+    for (let i = 0, n = this.schema.length; i < n; i++) {
+      if (this.schema[i] === "*") {
+        let v = i;
+        while (this.schema.slice(i).indexOf(this.value[v]) === -1 && this.value[v]) {
+          schemaValue.push(this.value[v]);
+          v += 1;
+        }
+      } else {
+        schemaValue.push(this.schema[i]);
+      }
+    }
+
+    this.schema = schemaValue;
+
+    if (this.schema.length !== this.value.length) {
       this.isMatch = false;
     }
 
@@ -96,11 +116,20 @@ export default class Parameters {
   }
 
   toString() {
-    const length = this.value.length;
-    const query  = new Array(length);
+    const query  = [];
 
-    for (var i = 0; i < length; i++) {
-      query[i] = this.value[i];
+    if (this.schema.length && !this.value.length) {
+      for (let i = 0, n = this.schema.length; i < n; i++) {
+        if (this.schema[i][0] === ":") {
+          query.push(this[this.schema[i].slice(1)]);
+        } else {
+          query.push(this.schema[i]);
+        }
+      }
+    } else {
+      for (let i = 0, n = this.value.length; i < n; i++) {
+        query[i] = this.value[i];
+      }
     }
 
     return "/" + query.join("/");
