@@ -108,10 +108,14 @@ export default class URL {
 
     if (typeof location === "object") {
       return this.getUrlOrigin(location.origin || location.href);
-    } else if (location && location.indexOf("http") === 0) {
+    } else if (location) {
       location = location.split("?")[0];
-      end      = location.indexOf("/", location.indexOf("//") + 2);
-      origin   = location.substring(0, end > -1 ? end : location.length);
+      if (location.indexOf("http") === 0) {
+        end    = location.indexOf("/", location.indexOf("//") + 2);
+        origin = location.substring(0, end > -1 ? end : location.length);
+      } else {
+        origin = location.split("/")[0] ? location.split("/")[0] : undefined;
+      }
     }
 
     return origin;
@@ -147,7 +151,7 @@ export default class URL {
   }
 
   copy() {
-    let x = new URL(this.params.value, this.location.value);
+    let x = new URL(this.schema, this.location);
 
     for (var k in this.search) {
       if (this.search.hasOwnProperty(k)) {
