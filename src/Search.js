@@ -176,16 +176,18 @@ export default class Search {
     }
 
     object.forEach(props => {
-      const ref = this.schema[props.key];
+      const ref       = this.schema[props.key];
       this[props.key] = {};
-      if (ref.delimiter) {
-        props.value
-          .split(ref.delimiter)
-          .forEach(value => {
-            this[props.key][ref.map[0]] = filterValue(value);
-          });
-      } else {
-        this[props.key][ref.map[0]] = filterValue(props.value);
+      if (ref) {
+        if (ref.delimiter) {
+          props.value
+            .split(ref.delimiter)
+            .forEach(value => {
+              this[props.key][ref.map[0]] = filterValue(value);
+            });
+        } else {
+          this[props.key][ref.map[0]] = filterValue(props.value);
+        }
       }
     });
   }
