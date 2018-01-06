@@ -9,6 +9,7 @@ const reserved = {
   get        : true,
   schema     : true,
   keys       : true,
+  isMatch    : true
 };
 
 function filterValue(str) {
@@ -45,7 +46,7 @@ function schemaObjectToString(key, value, schema) {
   for (var i = 0, n = schema.map.length; i < n; i++) {
     if (schema.map[i].type === "constant") {
       temp[1].push(schema.map[i].key);
-    } else if (value[schema.map[i]]) {
+    } else if (value[schema.map[i].key]) {
       temp[1].push(value[schema.map[i].key]);
     }
   }
@@ -172,11 +173,11 @@ export default class Search {
               .split(array[k].delimiter)
               .forEach((value, i) => {
                 this[array[k].key][pIndex] = (this[array[k].key][pIndex] || {});
-                this[array[k].key][pIndex][ref.map[i]] = filterValue(value);
+                this[array[k].key][pIndex][ref.map[i].key] = filterValue(value);
               });
           } else {
             this[array[k].key][pIndex] = (this[array[k].key][pIndex] || {});
-            this[array[k].key][pIndex][ref.map[0]] = filterValue(value);
+            this[array[k].key][pIndex][ref.map[0].key] = filterValue(value);
           }
         } else {
           this[array[k].key].push(filterValue(value));
@@ -191,11 +192,14 @@ export default class Search {
         if (ref.delimiter) {
           props.value
             .split(ref.delimiter)
-            .forEach(value => {
-              this[props.key][ref.map[0]] = filterValue(value);
+            .forEach((value, i) => {
+              const element = ref.map[i];
+              if (element.type === "variable") {
+                this[props.key][element.key] = filterValue(value);
+              }
             });
         } else {
-          this[props.key][ref.map[0]] = filterValue(props.value);
+          this[props.key][ref.map[0].key] = filterValue(props.value);
         }
       }
     });
