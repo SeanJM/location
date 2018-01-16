@@ -7,6 +7,7 @@ import toString from "./toString";
 import matching from "./matching";
 import hash from "./hash";
 import urlMethods from "./urlMethods";
+import nulls from "./nulls";
 
 tinytest(function (test, load) {
   schemaStringEmptyLocation(test);
@@ -17,5 +18,6 @@ tinytest(function (test, load) {
   matching(test);
   hash(test);
   urlMethods(test);
+  nulls(test);
   load();
 });

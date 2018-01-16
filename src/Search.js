@@ -201,6 +201,8 @@ export default class Search {
         } else {
           this[props.key][ref.map[0].key] = filterValue(props.value);
         }
+      } else {
+        this[props.key] = props.value ? filterValue(props.value) : 1;
       }
     });
   }

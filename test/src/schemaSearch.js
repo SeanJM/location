@@ -600,6 +600,68 @@ export default function (test) {
       };
     });
 
+  test("Incorrectly formatted location object (React Router)")
+    .this(function () {
+      let url = new URL("/insurance/receipts/all", {
+        origin   : undefined,
+        href     : "/insurance/receipts/all",
+        pathname : "/insurance/receipts/all",
+        hash     : "",
+        search   : "?index=0&length=20"
+      });
+      return url;
+    })
+    .isDeepEqual(function () {
+      return {
+        schema: {
+          href     : "/insurance/receipts/all",
+          pathname : "/insurance/receipts/all",
+          hash     : "",
+          search   : ""
+        },
+        location : {
+          href : "/insurance/receipts/all?index=0&length=20",
+          pathname : "/insurance/receipts/all",
+          hash : "",
+          search : "?index=0&length=20"
+        },
+        origin: {
+          isMatch: true
+        },
+        search: {
+          isMatch: false,
+          schema: {},
+          keys: [],
+          index: 0,
+          length: 20
+        },
+        params: {
+          schema: [{
+            type : "constant",
+            key  : "insurance"
+          }, {
+            type : "constant",
+            key  : "receipts"
+          }, {
+            type : "constant",
+            key  : "all"
+          }],
+          value : [
+            "insurance",
+            "receipts",
+            "all"
+          ],
+          isMatch : true
+        },
+        hash : {
+          schema  : "",
+          value   : "",
+          isMatch : true
+        },
+        isMatch : false
+      };
+    });
+
   test("http://localhost:3000/login?reset (default value)")
     .this(function () {
       let url = new URL(null, "http://localhost:3000/login?reset");

@@ -146,6 +146,10 @@ var _urlMethods = __webpack_require__(17);
 
 var _urlMethods2 = _interopRequireDefault(_urlMethods);
 
+var _nulls = __webpack_require__(18);
+
+var _nulls2 = _interopRequireDefault(_nulls);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 (0, _tinyTest2.default)(function (test, load) {
@@ -157,6 +161,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   (0, _matching2.default)(test);
   (0, _hash2.default)(test);
   (0, _urlMethods2.default)(test);
+  (0, _nulls2.default)(test);
   load();
 });
 
@@ -334,6 +339,9 @@ var URL = function () {
     key: "getUrlHref",
     value: function getUrlHref(location) {
       if ((typeof location === "undefined" ? "undefined" : _typeof(location)) === "object") {
+        if (location.href && location.search && location.href.indexOf("?") === -1) {
+          return location.href + this.getUrlSearch(location.search);
+        }
         return location.href || this.getLocationString(location);
       }
       return location;
@@ -737,6 +745,8 @@ var Search = function () {
           } else {
             _this2[props.key][ref.map[0].key] = filterValue(props.value);
           }
+        } else {
+          _this2[props.key] = props.value ? filterValue(props.value) : 1;
         }
       });
     }
@@ -2003,6 +2013,62 @@ exports.default = function (test) {
     };
   });
 
+  test("Incorrectly formatted location object (React Router)").this(function () {
+    var url = new _index2.default("/insurance/receipts/all", {
+      origin: undefined,
+      href: "/insurance/receipts/all",
+      pathname: "/insurance/receipts/all",
+      hash: "",
+      search: "?index=0&length=20"
+    });
+    return url;
+  }).isDeepEqual(function () {
+    return {
+      schema: {
+        href: "/insurance/receipts/all",
+        pathname: "/insurance/receipts/all",
+        hash: "",
+        search: ""
+      },
+      location: {
+        href: "/insurance/receipts/all?index=0&length=20",
+        pathname: "/insurance/receipts/all",
+        hash: "",
+        search: "?index=0&length=20"
+      },
+      origin: {
+        isMatch: true
+      },
+      search: {
+        isMatch: false,
+        schema: {},
+        keys: [],
+        index: 0,
+        length: 20
+      },
+      params: {
+        schema: [{
+          type: "constant",
+          key: "insurance"
+        }, {
+          type: "constant",
+          key: "receipts"
+        }, {
+          type: "constant",
+          key: "all"
+        }],
+        value: ["insurance", "receipts", "all"],
+        isMatch: true
+      },
+      hash: {
+        schema: "",
+        value: "",
+        isMatch: true
+      },
+      isMatch: false
+    };
+  });
+
   test("http://localhost:3000/login?reset (default value)").this(function () {
     var url = new _index2.default(null, "http://localhost:3000/login?reset");
     return url.search.reset;
@@ -2529,6 +2595,89 @@ module.exports = function (test) {
     return [url.test("/location/english"), url.test("/loc/english"), url.test(undefined)];
   }).isDeepEqual(function () {
     return [true, false, false];
+  });
+};
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _index = __webpack_require__(0);
+
+var _index2 = _interopRequireDefault(_index);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = function (test) {
+  test("new URL(null, null)").this(function () {
+    var l = new _index2.default(null, null);
+    return l;
+  }).isDeepEqual(function () {
+    return {
+      "schema": {},
+      "location": {},
+      "origin": {
+        "isMatch": true
+      },
+      "search": {
+        "isMatch": false,
+        "schema": {},
+        "keys": []
+      },
+      "params": {
+        "schema": [],
+        "value": [],
+        "isMatch": false
+      },
+      "hash": {
+        "isMatch": true
+      },
+      "isMatch": false
+    };
+  });
+
+  test("new URL(null, {})").this(function () {
+    var l = new _index2.default(null, {});
+    return l;
+  }).isDeepEqual(function () {
+    return {
+      "schema": {},
+      "location": {},
+      "origin": {
+        "isMatch": true
+      },
+      "search": {
+        "isMatch": false,
+        "schema": {},
+        "keys": []
+      },
+      "params": {
+        "schema": [],
+        "value": [],
+        "isMatch": false
+      },
+      "hash": {
+        "isMatch": true
+      },
+      "isMatch": false
+    };
+  });
+
+  test("new URL(null, null) toString").this(function () {
+    var l = new _index2.default(null, null);
+    return l.toString();
+  }).isEqual(function () {
+    return "/";
+  });
+
+  test("new URL(null, null) toString").this(function () {
+    var l = new _index2.default(null, {});
+    return l.toString();
+  }).isEqual(function () {
+    return "/";
   });
 };
 

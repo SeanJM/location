@@ -8,10 +8,10 @@ export default class URL {
     this.setSchema(schema || {});
     this.setLocation(location || {});
 
-    this.origin  = new Origin(this.schema, this.location);
-    this.search  = new Search(this.schema, this.location);
-    this.params  = new Parameters(this.schema, this.location);
-    this.hash    = new Hash(this.schema, this.location);
+    this.origin = new Origin(this.schema, this.location);
+    this.search = new Search(this.schema, this.location);
+    this.params = new Parameters(this.schema, this.location);
+    this.hash   = new Hash(this.schema, this.location);
 
     this.isMatch = (
       this.origin.isMatch &&
@@ -68,6 +68,9 @@ export default class URL {
 
   getUrlHref(location) {
     if (typeof location === "object") {
+      if (location.href && location.search && location.href.indexOf("?") === -1) {
+        return location.href + this.getUrlSearch(location.search);
+      }
       return location.href || this.getLocationString(location);
     }
     return location;
