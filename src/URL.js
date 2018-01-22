@@ -132,6 +132,9 @@ export default class URL {
       );
     } else if (location) {
       let split = location.split("?");
+      if (split[1]) {
+        split[1] = split[1].split("#")[0];
+      }
       return split[1] ? "?" + location.split("?")[1] : "";
     }
 

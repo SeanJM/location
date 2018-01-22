@@ -398,6 +398,9 @@ var URL = function () {
         return this.getUrlSearch(location.search || this.getLocationString(location));
       } else if (location) {
         var split = location.split("?");
+        if (split[1]) {
+          split[1] = split[1].split("#")[0];
+        }
         return split[1] ? "?" + location.split("?")[1] : "";
       }
 
