@@ -401,7 +401,7 @@ var URL = function () {
         if (split[1]) {
           split[1] = split[1].split("#")[0];
         }
-        return split[1] ? "?" + location.split("?")[1] : "";
+        return split[1] ? "?" + split[1] : "";
       }
 
       return undefined;
@@ -2105,6 +2105,45 @@ exports.default = function (test) {
     return {
       string: "this will be an encoded string",
       number: 2098
+    };
+  });
+
+  test("http://localhost:3000/?select=value#hash (search with hash)").this(function () {
+    var url = new _index2.default(null, {
+      href: "http://localhost:3000/?select=value#hash"
+    });
+
+    return url;
+  }).isDeepEqual(function () {
+    return {
+      schema: {},
+      location: {
+        origin: "http://localhost:3000",
+        href: "http://localhost:3000/?select=value#hash",
+        pathname: "/",
+        hash: "#hash",
+        search: "?select=value"
+      },
+      origin: {
+        value: "http://localhost:3000",
+        isMatch: false
+      },
+      search: {
+        isMatch: false,
+        schema: {},
+        keys: [],
+        select: "value"
+      },
+      params: {
+        schema: [],
+        value: [],
+        isMatch: true
+      },
+      hash: {
+        value: "#hash",
+        isMatch: false
+      },
+      isMatch: false
     };
   });
 };

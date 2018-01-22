@@ -135,7 +135,7 @@ export default class URL {
       if (split[1]) {
         split[1] = split[1].split("#")[0];
       }
-      return split[1] ? "?" + location.split("?")[1] : "";
+      return split[1] ? "?" + split[1] : "";
     }
 
     return undefined;
