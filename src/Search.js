@@ -135,6 +135,8 @@ export default class Search {
       props.value            = filterValue(props.value);
       this.schema[props.key] = props;
     });
+
+    return this;
   }
 
   setValue(search) {

@@ -683,6 +683,8 @@ var Search = function () {
         props.value = filterValue(props.value);
         _this.schema[props.key] = props;
       });
+
+      return this;
     }
   }, {
     key: "setValue",
@@ -2145,6 +2147,23 @@ exports.default = function (test) {
       },
       isMatch: false
     };
+  });
+
+  test("search 'setSchema'").this(function () {
+    var url = new _index2.default(null, {
+      href: "http://localhost:3000/?anything=tested"
+    });
+
+    url.search.setSchema("view=:id+:value").set({
+      view: {
+        id: "00982",
+        value: "cat"
+      }
+    });
+
+    return url.toString();
+  }).isDeepEqual(function () {
+    return "http://localhost:3000/?anything=tested&view=00982+cat";
   });
 };
 
