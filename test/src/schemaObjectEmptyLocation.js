@@ -4,6 +4,7 @@ export default function (test) {
   test("http://www.google.com/ (object.origin)")
     .this(function () {
       let l = new URL({ origin: "http://www.google.com/" });
+      console.log(JSON.stringify(l, null, "  "));
       return l;
     })
     .isDeepEqual(function () {
@@ -31,6 +32,10 @@ export default function (test) {
         },
 
         search  : {
+          src     : {
+            schema : undefined,
+            value  : undefined
+          },
           schema  : {},
           keys    : [],
           isMatch : false
@@ -43,9 +48,9 @@ export default function (test) {
         },
 
         hash : {
-          schema  : "",
+          schema  : undefined,
           value   : undefined,
-          isMatch : false
+          isMatch : true
         },
 
         isMatch : false
@@ -82,6 +87,10 @@ export default function (test) {
         },
 
         search  : {
+          src     : {
+            schema : undefined,
+            value  : undefined
+          },
           schema  : {},
           keys    : [],
           isMatch : false
@@ -94,9 +103,9 @@ export default function (test) {
         },
 
         hash : {
-          schema  : "",
+          schema  : undefined,
           value   : undefined,
-          isMatch : false
+          isMatch : true
         },
 
         isMatch : false

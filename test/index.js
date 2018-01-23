@@ -205,9 +205,9 @@ exports.default = function (test) {
       },
 
       hash: {
-        schema: "",
+        schema: undefined,
         value: undefined,
-        isMatch: false
+        isMatch: true
       },
 
       origin: {
@@ -217,6 +217,9 @@ exports.default = function (test) {
       },
 
       search: {
+        src: {
+          schema: undefined
+        },
         schema: {},
         keys: [],
         isMatch: false
@@ -604,10 +607,15 @@ var Search = function () {
 
     this.isMatch = typeof schema.search === "string" && typeof location.search === "string";
 
+    this.src = {
+      schema: schema.search || undefined,
+      value: location.search || undefined
+    };
+
     this.schema = {};
     this.keys = [];
+
     this.setSchema(schema.search);
-    this.setValue(location.search);
   }
 
   _createClass(Search, [{
@@ -653,6 +661,8 @@ var Search = function () {
     value: function setSchema(schema) {
       var _this = this;
 
+      this.src.schema = schema || undefined;
+
       this.searchEach(schema, function (props) {
         props.map = [];
         if (props.delimiter) {
@@ -684,6 +694,10 @@ var Search = function () {
         _this.schema[props.key] = props;
       });
 
+      if (this.src.value) {
+        this.setValue(this.src.value);
+      }
+
       return this;
     }
   }, {
@@ -693,6 +707,8 @@ var Search = function () {
 
       var array = {};
       var object = [];
+
+      this.src.value = search || undefined;
 
       this.searchEach(search, function (props) {
         var ref = _this2.schema[props.key];
@@ -1032,8 +1048,8 @@ var Hash = function () {
   function Hash(schema, location) {
     _classCallCheck(this, Hash);
 
-    this.schema = schema.hash;
-    this.value = location.hash;
+    this.schema = schema.hash || undefined;
+    this.value = location.hash || undefined;
     this.isMatch = this.schema === this.value;
   }
 
@@ -1067,6 +1083,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = function (test) {
   test("http://www.google.com/ (object.origin)").this(function () {
     var l = new _index2.default({ origin: "http://www.google.com/" });
+    console.log(JSON.stringify(l, null, "  "));
     return l;
   }).isDeepEqual(function () {
     return {
@@ -1093,6 +1110,10 @@ exports.default = function (test) {
       },
 
       search: {
+        src: {
+          schema: undefined,
+          value: undefined
+        },
         schema: {},
         keys: [],
         isMatch: false
@@ -1105,9 +1126,9 @@ exports.default = function (test) {
       },
 
       hash: {
-        schema: "",
+        schema: undefined,
         value: undefined,
-        isMatch: false
+        isMatch: true
       },
 
       isMatch: false
@@ -1142,6 +1163,10 @@ exports.default = function (test) {
       },
 
       search: {
+        src: {
+          schema: undefined,
+          value: undefined
+        },
         schema: {},
         keys: [],
         isMatch: false
@@ -1154,9 +1179,9 @@ exports.default = function (test) {
       },
 
       hash: {
-        schema: "",
+        schema: undefined,
         value: undefined,
-        isMatch: false
+        isMatch: true
       },
 
       isMatch: false
@@ -1212,6 +1237,10 @@ exports.default = function (test) {
       search: {
         schema: {},
         keys: [],
+        src: {
+          schema: undefined,
+          value: undefined
+        },
         isMatch: true
       },
 
@@ -1223,8 +1252,8 @@ exports.default = function (test) {
       },
 
       hash: {
-        schema: "",
-        value: "",
+        schema: undefined,
+        value: undefined,
         isMatch: true
       },
 
@@ -1260,6 +1289,10 @@ exports.default = function (test) {
       },
 
       search: {
+        src: {
+          schema: undefined,
+          value: undefined
+        },
         schema: {},
         keys: [],
         isMatch: true
@@ -1280,8 +1313,8 @@ exports.default = function (test) {
       },
 
       hash: {
-        schema: "",
-        value: "",
+        schema: undefined,
+        value: undefined,
         isMatch: true
       },
 
@@ -1319,7 +1352,11 @@ exports.default = function (test) {
       search: {
         schema: {},
         keys: [],
-        isMatch: true
+        isMatch: true,
+        src: {
+          schema: undefined,
+          value: undefined
+        }
       },
 
       params: {
@@ -1336,8 +1373,8 @@ exports.default = function (test) {
       },
 
       hash: {
-        schema: "",
-        value: "",
+        schema: undefined,
+        value: undefined,
         isMatch: true
       },
 
@@ -1497,7 +1534,9 @@ exports.default = function (test) {
             map: []
           }
         },
-
+        src: {
+          schema: "?search=1"
+        },
         keys: ["search"],
         isMatch: false
       },
@@ -1509,9 +1548,9 @@ exports.default = function (test) {
       },
 
       hash: {
-        schema: "",
+        schema: undefined,
         value: undefined,
-        isMatch: false
+        isMatch: true
       },
 
       isMatch: false
@@ -1558,7 +1597,9 @@ exports.default = function (test) {
             }]
           }
         },
-
+        src: {
+          schema: "?search=:number"
+        },
         keys: ["search"],
         isMatch: false
       },
@@ -1570,9 +1611,9 @@ exports.default = function (test) {
       },
 
       hash: {
-        schema: "",
+        schema: undefined,
         value: undefined,
-        isMatch: false
+        isMatch: true
       },
 
       isMatch: false
@@ -1626,6 +1667,10 @@ exports.default = function (test) {
             }]
           }
         },
+        src: {
+          schema: "?origin=board+:category+:page",
+          value: "?origin=board+food+1"
+        },
         keys: ["origin"],
         origin: {
           "category": "food",
@@ -1645,8 +1690,8 @@ exports.default = function (test) {
         postID: "ezAYhlkuGEz"
       },
       hash: {
-        schema: "",
-        value: "",
+        schema: undefined,
+        value: undefined,
         isMatch: true
       },
       isMatch: true
@@ -1694,6 +1739,10 @@ exports.default = function (test) {
             map: []
           }
         },
+        src: {
+          schema: "?search[]",
+          value: "?search[]=1&search[]=2"
+        },
         search: [1, 2],
         keys: ["search"],
         isMatch: true
@@ -1706,8 +1755,8 @@ exports.default = function (test) {
       },
 
       hash: {
-        schema: "",
-        value: "",
+        schema: undefined,
+        value: undefined,
         isMatch: true
       },
 
@@ -1746,7 +1795,11 @@ exports.default = function (test) {
         isMatch: false,
         schema: {},
         keys: [],
-        search: [1, 2]
+        search: [1, 2],
+        src: {
+          schema: undefined,
+          value: "?search[]=1&search[]=2"
+        }
       },
 
       params: {
@@ -1756,8 +1809,8 @@ exports.default = function (test) {
       },
 
       hash: {
-        schema: "",
-        value: "",
+        schema: undefined,
+        value: undefined,
         isMatch: true
       },
 
@@ -1806,7 +1859,10 @@ exports.default = function (test) {
             }]
           }
         },
-
+        src: {
+          schema: "?search=:number",
+          value: "?search=1"
+        },
         keys: ["search"],
         search: {
           number: 1
@@ -1820,8 +1876,8 @@ exports.default = function (test) {
       },
 
       hash: {
-        schema: "",
-        value: "",
+        schema: undefined,
+        value: undefined,
         isMatch: true
       },
 
@@ -1870,6 +1926,10 @@ exports.default = function (test) {
             }]
           }
         },
+        src: {
+          schema: "?search[]=:number",
+          value: "?search[]=1&search[]=2"
+        },
         keys: ["search"],
         search: [{ number: 1 }, { number: 2 }]
       },
@@ -1881,8 +1941,8 @@ exports.default = function (test) {
       },
 
       hash: {
-        schema: "",
-        value: "",
+        schema: undefined,
+        value: undefined,
         isMatch: true
       },
 
@@ -1934,6 +1994,10 @@ exports.default = function (test) {
             }]
           }
         },
+        src: {
+          schema: "?person[]=:age+:gender",
+          value: "?person[]=1+male&person[]=2+female"
+        },
         keys: ["person"],
         person: [{ age: 1, gender: "male" }, { age: 2, gender: "female" }]
       },
@@ -1945,8 +2009,8 @@ exports.default = function (test) {
       },
 
       hash: {
-        schema: "",
-        value: "",
+        schema: undefined,
+        value: undefined,
         isMatch: true
       },
 
@@ -1998,6 +2062,10 @@ exports.default = function (test) {
             }]
           }
         },
+        src: {
+          schema: "?person[]=:age+:gender",
+          value: "?person[]=1&person[]=2+female"
+        },
         keys: ["person"],
         person: [{ age: 1 }, { age: 2, gender: "female" }]
       },
@@ -2009,8 +2077,8 @@ exports.default = function (test) {
       },
 
       hash: {
-        schema: "",
-        value: "",
+        schema: undefined,
+        value: undefined,
         isMatch: true
       },
 
@@ -2049,7 +2117,11 @@ exports.default = function (test) {
         schema: {},
         keys: [],
         index: 0,
-        length: 20
+        length: 20,
+        src: {
+          schema: undefined,
+          value: "?index=0&length=20"
+        }
       },
       params: {
         schema: [{
@@ -2066,8 +2138,8 @@ exports.default = function (test) {
         isMatch: true
       },
       hash: {
-        schema: "",
-        value: "",
+        schema: undefined,
+        value: undefined,
         isMatch: true
       },
       isMatch: false
@@ -2134,7 +2206,11 @@ exports.default = function (test) {
         isMatch: false,
         schema: {},
         keys: [],
-        select: "value"
+        select: "value",
+        src: {
+          schema: undefined,
+          value: "?select=value"
+        }
       },
       params: {
         schema: [],
@@ -2164,6 +2240,19 @@ exports.default = function (test) {
     return url.toString();
   }).isDeepEqual(function () {
     return "http://localhost:3000/?anything=tested&view=00982+cat";
+  });
+
+  test("search 'setSchema' new value").this(function () {
+    var url = new _index2.default(null, {
+      href: "/insurance/receipts/all?index=0&length=12&view=T504ATP07122+receipt"
+    });
+
+    url.search.setSchema("view=:id+:viewId");
+
+    url.search.view.id = "four";
+    return url.toString();
+  }).isDeepEqual(function () {
+    return "/insurance/receipts/all?index=0&length=12&view=four+receipt";
   });
 };
 
@@ -2413,6 +2502,10 @@ module.exports = function (test) {
             }]
           }
         },
+        src: {
+          schema: "?origin=user+:userID+:section+:page",
+          value: "?origin=user+98fjhd+all+1"
+        },
         keys: ["origin"],
         origin: {
           userID: "98fjhd",
@@ -2426,8 +2519,8 @@ module.exports = function (test) {
         isMatch: true
       },
       hash: {
-        schema: "",
-        value: "",
+        schema: undefined,
+        value: undefined,
         isMatch: true
       },
       isMatch: true
@@ -2482,6 +2575,10 @@ module.exports = function (test) {
             }]
           }
         },
+        src: {
+          schema: "?origin=user+:userID+:section+:page",
+          value: "?origin=user+98fjhd+all+1"
+        },
         keys: ["origin"],
         origin: {
           userID: "98fjhd",
@@ -2495,8 +2592,8 @@ module.exports = function (test) {
         isMatch: false
       },
       hash: {
-        schema: "",
-        value: "",
+        schema: undefined,
+        value: undefined,
         isMatch: true
       },
       isMatch: false
@@ -2528,6 +2625,10 @@ module.exports = function (test) {
       search: {
         isMatch: true,
         schema: {},
+        src: {
+          schema: undefined,
+          value: undefined
+        },
         keys: []
       },
       params: {
@@ -2542,8 +2643,8 @@ module.exports = function (test) {
         isMatch: true
       },
       hash: {
-        schema: "",
-        value: "",
+        schema: undefined,
+        value: undefined,
         isMatch: true
       },
       isMatch: true
@@ -2587,7 +2688,11 @@ module.exports = function (test) {
       search: {
         isMatch: false,
         schema: {},
-        keys: []
+        keys: [],
+        src: {
+          schema: undefined,
+          value: undefined
+        }
       },
       params: {
         schema: [],
@@ -2686,7 +2791,11 @@ module.exports = function (test) {
       "search": {
         "isMatch": false,
         "schema": {},
-        "keys": []
+        "keys": [],
+        src: {
+          schema: undefined,
+          value: undefined
+        }
       },
       "params": {
         "schema": [],
@@ -2713,7 +2822,11 @@ module.exports = function (test) {
       "search": {
         "isMatch": false,
         "schema": {},
-        "keys": []
+        "keys": [],
+        src: {
+          schema: undefined,
+          value: undefined
+        }
       },
       "params": {
         "schema": [],

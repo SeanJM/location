@@ -33,6 +33,10 @@ export default function (test) {
         search : {
           schema  : {},
           keys    : [],
+          src     : {
+            schema : undefined,
+            value  : undefined
+          },
           isMatch : true
         },
 
@@ -44,8 +48,8 @@ export default function (test) {
         },
 
         hash   : {
-          schema  : "",
-          value   : "",
+          schema  : undefined,
+          value   : undefined,
           isMatch : true
         },
 
@@ -83,6 +87,10 @@ export default function (test) {
         },
 
         search : {
+          src     : {
+            schema : undefined,
+            value  : undefined
+          },
           schema  : {},
           keys    : [],
           isMatch : true,
@@ -103,8 +111,8 @@ export default function (test) {
         },
 
         hash   : {
-          schema  : "",
-          value   : "",
+          schema  : undefined,
+          value   : undefined,
           isMatch : true
         },
 
@@ -144,7 +152,11 @@ export default function (test) {
         search : {
           schema  : {},
           keys    : [],
-          isMatch : true
+          isMatch : true,
+          src : {
+            schema : undefined,
+            value  : undefined
+          }
         },
 
         params : {
@@ -161,8 +173,8 @@ export default function (test) {
         },
 
         hash   : {
-          schema  : "",
-          value   : "",
+          schema  : undefined,
+          value   : undefined,
           isMatch : true
         },
 

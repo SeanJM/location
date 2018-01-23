@@ -1,7 +1,7 @@
 export default class Hash {
   constructor(schema, location) {
-    this.schema  = schema.hash;
-    this.value   = location.hash;
+    this.schema  = schema.hash || undefined;
+    this.value   = location.hash || undefined;
     this.isMatch = this.schema === this.value;
   }
 

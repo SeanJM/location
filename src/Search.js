@@ -63,10 +63,15 @@ export default class Search {
       typeof location.search === "string"
     );
 
+    this.src = {
+      schema : schema.search || undefined,
+      value  : location.search || undefined
+    };
+
     this.schema  = {};
     this.keys    = [];
+
     this.setSchema(schema.search);
-    this.setValue(location.search);
   }
 
   searchEach(raw, callback) {
@@ -105,6 +110,8 @@ export default class Search {
   }
 
   setSchema(schema) {
+    this.src.schema = schema || undefined;
+
     this.searchEach(schema, props => {
       props.map = [];
       if (props.delimiter) {
@@ -136,12 +143,18 @@ export default class Search {
       this.schema[props.key] = props;
     });
 
+    if (this.src.value) {
+      this.setValue(this.src.value);
+    }
+
     return this;
   }
 
   setValue(search) {
     const array  = {};
     const object = [];
+
+    this.src.value = search || undefined;
 
     this.searchEach(search, props => {
       const ref = this.schema[props.key];

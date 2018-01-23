@@ -63,6 +63,10 @@ module.exports = function (test) {
               }]
             }
           },
+          src : {
+            schema : "?origin=user+:userID+:section+:page",
+            value  : "?origin=user+98fjhd+all+1"
+          },
           keys: [ "origin" ],
           origin: {
             userID  : "98fjhd",
@@ -76,8 +80,8 @@ module.exports = function (test) {
           isMatch : true
         },
         hash: {
-          schema  : "",
-          value   : "",
+          schema  : undefined,
+          value   : undefined,
           isMatch : true
         },
         isMatch : true
@@ -134,6 +138,10 @@ module.exports = function (test) {
               }]
             }
           },
+          src : {
+            schema : "?origin=user+:userID+:section+:page",
+            value  : "?origin=user+98fjhd+all+1"
+          },
           keys : [
             "origin"
           ],
@@ -152,8 +160,8 @@ module.exports = function (test) {
           isMatch : false
         },
         hash : {
-          schema  : "",
-          value   : "",
+          schema  : undefined,
+          value   : undefined,
           isMatch : true
         },
         isMatch : false
@@ -187,6 +195,10 @@ module.exports = function (test) {
         search : {
           isMatch : true,
           schema  : {},
+          src     : {
+            schema : undefined,
+            value  : undefined
+          },
           keys    : []
         },
         params : {
@@ -204,8 +216,8 @@ module.exports = function (test) {
           isMatch : true
         },
         hash : {
-          schema  : "",
-          value   : "",
+          schema  : undefined,
+          value   : undefined,
           isMatch : true
         },
         isMatch : true

@@ -25,7 +25,11 @@ module.exports = function (test) {
         search : {
           isMatch : false,
           schema  : {},
-          keys    : []
+          keys    : [],
+          src     : {
+            schema : undefined,
+            value  : undefined
+          }
         },
         params : {
           schema  : [],

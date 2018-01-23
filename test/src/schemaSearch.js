@@ -40,7 +40,9 @@ export default function (test) {
               map       : []
             }
           },
-
+          src : {
+            schema: "?search=1"
+          },
           keys    : [ "search" ],
           isMatch : false,
         },
@@ -52,9 +54,9 @@ export default function (test) {
         },
 
         hash : {
-          schema  : "",
+          schema  : undefined,
           value   : undefined,
-          isMatch : false
+          isMatch : true
         },
 
         isMatch : false
@@ -103,7 +105,9 @@ export default function (test) {
               }]
             }
           },
-
+          src     : {
+            schema : "?search=:number"
+          },
           keys    : [ "search" ],
           isMatch : false,
         },
@@ -115,9 +119,9 @@ export default function (test) {
         },
 
         hash : {
-          schema  : "",
+          schema  : undefined,
           value   : undefined,
-          isMatch : false
+          isMatch : true
         },
 
         isMatch : false
@@ -173,6 +177,10 @@ export default function (test) {
               }]
             }
           },
+          src : {
+            schema : "?origin=board+:category+:page",
+            value  : "?origin=board+food+1"
+          },
           keys : [
             "origin"
           ],
@@ -194,8 +202,8 @@ export default function (test) {
           postID  : "ezAYhlkuGEz"
         },
         hash: {
-          schema  : "",
-          value   : "",
+          schema  : undefined,
+          value   : undefined,
           isMatch : true
         },
         isMatch : true
@@ -245,6 +253,10 @@ export default function (test) {
               map       : []
             }
           },
+          src     : {
+            schema : "?search[]",
+            value  : "?search[]=1&search[]=2"
+          },
           search  : [ 1, 2 ],
           keys    : [ "search" ],
           isMatch : true,
@@ -257,8 +269,8 @@ export default function (test) {
         },
 
         hash : {
-          schema  : "",
-          value   : "",
+          schema  : undefined,
+          value   : undefined,
           isMatch : true
         },
 
@@ -302,7 +314,11 @@ export default function (test) {
           isMatch : false,
           schema  : {},
           keys    : [],
-          search  : [ 1, 2 ]
+          search  : [ 1, 2 ],
+          src     : {
+            schema : undefined,
+            value  : "?search[]=1&search[]=2"
+          }
         },
 
         params : {
@@ -312,8 +328,8 @@ export default function (test) {
         },
 
         hash: {
-          schema  : "",
-          value   : "",
+          schema  : undefined,
+          value   : undefined,
           isMatch : true
         },
 
@@ -364,7 +380,10 @@ export default function (test) {
               }]
             }
           },
-
+          src : {
+            schema : "?search=:number",
+            value  : "?search=1"
+          },
           keys   : [ "search" ],
           search : {
             number : 1
@@ -378,8 +397,8 @@ export default function (test) {
         },
 
         hash : {
-          schema  : "",
-          value   : "",
+          schema  : undefined,
+          value   : undefined,
           isMatch : true
         },
 
@@ -433,6 +452,10 @@ export default function (test) {
               }]
             }
           },
+          src : {
+            schema : "?search[]=:number",
+            value  : "?search[]=1&search[]=2"
+          },
           keys    : [ "search" ],
           search  : [
             { number: 1 },
@@ -447,8 +470,8 @@ export default function (test) {
         },
 
         hash : {
-          schema  : "",
-          value   : "",
+          schema  : undefined,
+          value   : undefined,
           isMatch : true
         },
 
@@ -505,6 +528,10 @@ export default function (test) {
               }]
             }
           },
+          src : {
+            schema : "?person[]=:age+:gender",
+            value  : "?person[]=1+male&person[]=2+female"
+          },
           keys    : [ "person" ],
           person  : [
             { age: 1, gender: "male" },
@@ -519,8 +546,8 @@ export default function (test) {
         },
 
         hash : {
-          schema  : "",
-          value   : "",
+          schema  : undefined,
+          value   : undefined,
           isMatch : true
         },
 
@@ -577,6 +604,10 @@ export default function (test) {
               }]
             }
           },
+          src : {
+            schema : "?person[]=:age+:gender",
+            value  : "?person[]=1&person[]=2+female"
+          },
           keys    : [ "person" ],
           person  : [
             { age: 1 },
@@ -591,8 +622,8 @@ export default function (test) {
         },
 
         hash : {
-          schema  : "",
-          value   : "",
+          schema  : undefined,
+          value   : undefined,
           isMatch : true
         },
 
@@ -633,7 +664,11 @@ export default function (test) {
           schema: {},
           keys: [],
           index: 0,
-          length: 20
+          length: 20,
+          src : {
+            schema : undefined,
+            value : "?index=0&length=20"
+          }
         },
         params: {
           schema: [{
@@ -654,8 +689,8 @@ export default function (test) {
           isMatch : true
         },
         hash : {
-          schema  : "",
-          value   : "",
+          schema  : undefined,
+          value   : undefined,
           isMatch : true
         },
         isMatch : false
@@ -730,7 +765,11 @@ export default function (test) {
           isMatch : false,
           schema  : {},
           keys    : [],
-          select  : "value"
+          select  : "value",
+          src     : {
+            schema : undefined,
+            value  : "?select=value"
+          }
         },
         params : {
           schema  : [],
@@ -764,5 +803,21 @@ export default function (test) {
     })
     .isDeepEqual(function () {
       return "http://localhost:3000/?anything=tested&view=00982+cat";
+    });
+
+  test("search 'setSchema' new value")
+    .this(function () {
+      let url = new URL(null, {
+        href: "/insurance/receipts/all?index=0&length=12&view=T504ATP07122+receipt"
+      });
+
+      url.search
+        .setSchema("view=:id+:viewId");
+
+      url.search.view.id = "four";
+      return url.toString();
+    })
+    .isDeepEqual(function () {
+      return "/insurance/receipts/all?index=0&length=12&view=four+receipt";
     });
 }

@@ -25,9 +25,9 @@ export default function (test) {
         },
 
         hash    : {
-          schema  : "",
+          schema  : undefined,
           value   : undefined,
-          isMatch : false
+          isMatch : true
         },
 
         origin  : {
@@ -37,6 +37,9 @@ export default function (test) {
         },
 
         search  : {
+          src     : {
+            schema : undefined
+          },
           schema  : {},
           keys    : [],
           isMatch : false,
