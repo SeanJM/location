@@ -48,7 +48,7 @@ export default function (test) {
         params  : {
           schema  : [],
           value   : [],
-          isMatch : false
+          isMatch : true
         },
 
         isMatch : false

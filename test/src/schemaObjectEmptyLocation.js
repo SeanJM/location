@@ -44,7 +44,7 @@ export default function (test) {
         params  : {
           schema  : [],
           value   : [],
-          isMatch : false
+          isMatch : true
         },
 
         hash : {
@@ -99,7 +99,7 @@ export default function (test) {
         params  : {
           schema  : [],
           value   : [],
-          isMatch : false
+          isMatch : true
         },
 
         hash : {

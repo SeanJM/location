@@ -40,7 +40,7 @@ export default class Parameters {
 
     this.schema  = pathnameToArray(schema.pathname);
     this.value   = pathnameToArray(location.pathname);
-    this.isMatch = !!location.pathname;
+    this.isMatch = true;
 
     for (let i = this.schema.length - 1; i >= 0; i--) {
       if (this.schema[i] === "*" && this.schema[i - 1] === "*") {

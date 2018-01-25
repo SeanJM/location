@@ -25,7 +25,7 @@ module.exports = function (test) {
         "params": {
           "schema": [],
           "value": [],
-          "isMatch": false
+          "isMatch": true
         },
         "hash": {
           "isMatch": true
@@ -58,7 +58,7 @@ module.exports = function (test) {
         "params": {
           "schema": [],
           "value": [],
-          "isMatch": false
+          "isMatch": true
         },
         "hash": {
           "isMatch": true
