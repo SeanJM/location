@@ -550,7 +550,7 @@ Search.prototype.toString = function () {
         while (++x < y) {
           search.push(k + "[]=" + encodeURI(this[k][x]));
         }
-      } else {
+      } else if (typeof this[k] !== "undefined" && this[k] != null) {
         search.push(k + "=" + encodeURI(this[k]));
       }
     }
