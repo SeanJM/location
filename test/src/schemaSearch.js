@@ -184,7 +184,7 @@ export default function (test) {
         href: "http://localhost:3000/?string"
       });
 
-      url.search.set({
+      url.search.assign({
         string : "this will be an encoded string",
         number : 2098
       });

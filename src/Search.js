@@ -6,10 +6,19 @@ const reserved = {
 };
 
 function Search(location) {
-  this.setValue(location.search);
+  this.set(location.search);
 }
 
-Search.prototype.setValue = function (search) {
+function assignAB(a, b) {
+  for (var k in b) {
+    if (b.hasOwnProperty(k)) {
+      a[k] = b[k];
+    }
+  }
+  return a;
+}
+
+Search.prototype.set = function (search) {
   const parts = (
     search
       ? search.split("?")[1].split("&")
@@ -65,14 +74,14 @@ Search.prototype.toString = function () {
   return search.length ? "?" + search.join("&") : "";
 };
 
-Search.prototype.set = function (props) {
-  for (var k in props) {
-    if (props.hasOwnProperty(k) && !reserved[k]) {
-      this[k] = props[k];
-    } else if (Search.prototype[k]) {
-      throw "Invalid property \"" + k + "\", this is a reserved key";
-    }
+Search.prototype.assign = function () {
+  let i = -1;
+  let n = arguments.length;
+
+  while (++i < n) {
+    assignAB(this, arguments[i]);
   }
+
   return this;
 };
 

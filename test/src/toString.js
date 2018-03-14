@@ -107,13 +107,13 @@ module.exports = function (test) {
       return "http://localhost:3000/login?reset=1";
     });
 
-  test("http://localhost:3000/?string (search set)")
+  test("http://localhost:3000/?string (search assign)")
     .this(function () {
       let url = new URL(null, {
         href: "http://localhost:3000/?string"
       });
 
-      url.search.set({
+      url.search.assign({
         string: "this will be an encoded string"
       });
 

@@ -494,10 +494,19 @@ var reserved = {
 };
 
 function Search(location) {
-  this.setValue(location.search);
+  this.set(location.search);
 }
 
-Search.prototype.setValue = function (search) {
+function assignAB(a, b) {
+  for (var k in b) {
+    if (b.hasOwnProperty(k)) {
+      a[k] = b[k];
+    }
+  }
+  return a;
+}
+
+Search.prototype.set = function (search) {
   var parts = search ? search.split("?")[1].split("&") : [];
 
   var i = -1;
@@ -549,14 +558,14 @@ Search.prototype.toString = function () {
   return search.length ? "?" + search.join("&") : "";
 };
 
-Search.prototype.set = function (props) {
-  for (var k in props) {
-    if (props.hasOwnProperty(k) && !reserved[k]) {
-      this[k] = props[k];
-    } else if (Search.prototype[k]) {
-      throw "Invalid property \"" + k + "\", this is a reserved key";
-    }
+Search.prototype.assign = function () {
+  var i = -1;
+  var n = arguments.length;
+
+  while (++i < n) {
+    assignAB(this, arguments[i]);
   }
+
   return this;
 };
 
@@ -1344,7 +1353,7 @@ exports.default = function (test) {
       href: "http://localhost:3000/?string"
     });
 
-    url.search.set({
+    url.search.assign({
       string: "this will be an encoded string",
       number: 2098
     });
@@ -1496,12 +1505,12 @@ module.exports = function (test) {
     return "http://localhost:3000/login?reset=1";
   });
 
-  test("http://localhost:3000/?string (search set)").this(function () {
+  test("http://localhost:3000/?string (search assign)").this(function () {
     var url = new _index2.default(null, {
       href: "http://localhost:3000/?string"
     });
 
-    url.search.set({
+    url.search.assign({
       string: "this will be an encoded string"
     });
 
