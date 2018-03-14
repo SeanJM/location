@@ -61,7 +61,7 @@ module.exports =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 1);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -75,7 +75,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _URL = __webpack_require__(5);
+var _URL = __webpack_require__(4);
 
 var _URL2 = _interopRequireDefault(_URL);
 
@@ -90,31 +90,11 @@ exports.default = _URL2.default;
 "use strict";
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = clear;
-function clear() {
-  for (var k in this) {
-    if (this.hasOwnProperty(k)) {
-      this[k] = undefined;
-    }
-  }
-  return this;
-}
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _tinyTest = __webpack_require__(3);
+var _tinyTest = __webpack_require__(2);
 
 var _tinyTest2 = _interopRequireDefault(_tinyTest);
 
-var _schemaStringEmptyLocation = __webpack_require__(4);
+var _schemaStringEmptyLocation = __webpack_require__(3);
 
 var _schemaStringEmptyLocation2 = _interopRequireDefault(_schemaStringEmptyLocation);
 
@@ -166,13 +146,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 });
 
 /***/ }),
-/* 3 */
+/* 2 */
 /***/ (function(module, exports) {
 
 module.exports = require("tiny-test");
 
 /***/ }),
-/* 4 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -217,7 +197,7 @@ var _index2 = _interopRequireDefault(_index);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /***/ }),
-/* 5 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -231,15 +211,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _Origin = __webpack_require__(6);
+var _Origin = __webpack_require__(5);
 
 var _Origin2 = _interopRequireDefault(_Origin);
 
-var _Search = __webpack_require__(7);
+var _Search = __webpack_require__(6);
 
 var _Search2 = _interopRequireDefault(_Search);
 
-var _Parameters = __webpack_require__(8);
+var _Parameters = __webpack_require__(7);
 
 var _Parameters2 = _interopRequireDefault(_Parameters);
 
@@ -460,7 +440,7 @@ var URL = function () {
 exports.default = URL;
 
 /***/ }),
-/* 6 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -494,6 +474,106 @@ var Origin = function () {
 exports.default = Origin;
 
 /***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var reserved = {
+  setValue: true,
+  toString: true,
+  set: true,
+  get: true
+};
+
+function Search(location) {
+  this.setValue(location.search);
+}
+
+Search.prototype.setValue = function (search) {
+  var parts = search ? search.split("?")[1].split("&") : [];
+
+  var i = -1;
+  var n = parts.length;
+  var t = [];
+
+  for (var k in this) {
+    if (this.hasOwnProperty(k)) {
+      delete this[k];
+    }
+  }
+
+  while (++i < n) {
+    t = parts[i].split("=");
+    t[1] = decodeURI(t[1] || "1");
+    if (t[0].substr(-2) === "[]") {
+      t[0] = t[0].substring(0, t[0].length - 2);
+      if (reserved[t[0]]) {
+        throw new Error("Invalid key \"" + t[0] + "\", this key is reserved.");
+      }
+      if (!this[t[0]]) {
+        this[t[0]] = [];
+      }
+      this[t[0]].push(t[1]);
+    } else {
+      if (reserved[t[0]]) {
+        throw new Error("Invalid key \"" + t[0] + "\", this key is reserved.");
+      }
+      this[t[0]] = t[1];
+    }
+  }
+};
+
+Search.prototype.toString = function () {
+  var search = [];
+  for (var k in this) {
+    if (this.hasOwnProperty(k) && !reserved[k]) {
+      if (Array.isArray(this[k])) {
+        var x = -1;
+        var y = this[k].length;
+        while (++x < y) {
+          search.push(k + "[]=" + encodeURI(this[k][x]));
+        }
+      } else {
+        search.push(k + "=" + encodeURI(this[k]));
+      }
+    }
+  }
+  return search.length ? "?" + search.join("&") : "";
+};
+
+Search.prototype.set = function (props) {
+  for (var k in props) {
+    if (props.hasOwnProperty(k) && !reserved[k]) {
+      this[k] = props[k];
+    } else if (Search.prototype[k]) {
+      throw "Invalid property \"" + k + "\", this is a reserved key";
+    }
+  }
+  return this;
+};
+
+Search.prototype.get = function (key) {
+  var props = {};
+  if ((typeof key === "undefined" ? "undefined" : _typeof(key)) === "object") {
+    for (var i = 0, n = key.length; i < n; i++) {
+      props[key[i]] = this.get(key[i]);
+    }
+    return props;
+  }
+  return this[key];
+};
+
+exports.default = Search;
+
+/***/ }),
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -510,129 +590,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var clear = __webpack_require__(1);
-
-var reserved = {
-  setValue: true,
-  toString: true,
-  set: true,
-  get: true
-};
-
-var Search = function () {
-  function Search(location) {
-    _classCallCheck(this, Search);
-
-    this.setValue(location.search);
-  }
-
-  _createClass(Search, [{
-    key: "setValue",
-    value: function setValue(search) {
-      var parts = search ? search.split("?")[1].split("&") : [];
-
-      var i = -1;
-      var n = parts.length;
-      var t = [];
-
-      for (var k in this) {
-        if (this.hasOwnProperty(k)) {
-          delete this[k];
-        }
-      }
-
-      while (++i < n) {
-        t = parts[i].split("=");
-        t[1] = decodeURI(t[1] || "1");
-        if (t[0].substr(-2) === "[]") {
-          t[0] = t[0].substring(0, t[0].length - 2);
-          if (reserved[t[0]]) {
-            throw new Error("Invalid key \"" + t[0] + "\", this key is reserved.");
-          }
-          if (!this[t[0]]) {
-            this[t[0]] = [];
-          }
-          this[t[0]].push(t[1]);
-        } else {
-          if (reserved[t[0]]) {
-            throw new Error("Invalid key \"" + t[0] + "\", this key is reserved.");
-          }
-          this[t[0]] = t[1];
-        }
-      }
-    }
-  }, {
-    key: "toString",
-    value: function toString() {
-      var search = [];
-      for (var k in this) {
-        if (this.hasOwnProperty(k) && !reserved[k]) {
-          if (Array.isArray(this[k])) {
-            var x = -1;
-            var y = this[k].length;
-            while (++x < y) {
-              search.push(k + "[]=" + encodeURI(this[k][x]));
-            }
-          } else {
-            search.push(k + "=" + encodeURI(this[k]));
-          }
-        }
-      }
-      return search.length ? "?" + search.join("&") : "";
-    }
-  }, {
-    key: "set",
-    value: function set(props) {
-      for (var k in props) {
-        if (props.hasOwnProperty(k) && !reserved[k]) {
-          this[k] = props[k];
-        } else if (Search.prototype[k]) {
-          throw "Invalid property \"" + k + "\", this is a reserved key";
-        }
-      }
-      return this;
-    }
-  }, {
-    key: "get",
-    value: function get(key) {
-      var props = {};
-      if ((typeof key === "undefined" ? "undefined" : _typeof(key)) === "object") {
-        for (var i = 0, n = key.length; i < n; i++) {
-          props[key[i]] = this.get(key[i]);
-        }
-        return props;
-      }
-      return this[key];
-    }
-  }]);
-
-  return Search;
-}();
-
-exports.default = Search;
-
-
-Search.prototype.clear = clear;
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var set = __webpack_require__(9);
-var clear = __webpack_require__(1);
+var set = __webpack_require__(8);
+var clear = __webpack_require__(9);
 
 function pathnameToArray(pathname) {
   pathname = pathname || "";
@@ -797,7 +756,7 @@ Parameters.prototype.set = set;
 Parameters.prototype.clear = clear;
 
 /***/ }),
-/* 9 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -810,6 +769,26 @@ exports.default = set;
 function set(props) {
   for (var k in props) {
     this[k] = props[k];
+  }
+  return this;
+}
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = clear;
+function clear() {
+  for (var k in this) {
+    if (this.hasOwnProperty(k)) {
+      this[k] = undefined;
+    }
   }
   return this;
 }
