@@ -12,8 +12,7 @@ export default function (test) {
           origin   : "http://www.google.com",
           href     : "http://www.google.com/:x",
           pathname : "/:x",
-          hash     : "",
-          search   : ""
+          hash     : ""
         },
 
         location: {
@@ -25,19 +24,11 @@ export default function (test) {
         },
 
         origin : {
-          schema  : "http://www.google.com",
-          value   : "http://www.google.com",
-          isMatch : true
+          value : "http://www.google.com"
         },
 
         search : {
-          schema  : {},
-          keys    : [],
-          src     : {
-            schema : undefined,
-            value  : undefined
-          },
-          isMatch : true
+          value : undefined
         },
 
         params : {
@@ -68,8 +59,7 @@ export default function (test) {
           origin   : "http://www.google.com",
           href     : "http://www.google.com/:x/:y",
           pathname : "/:x/:y",
-          hash     : "",
-          search   : ""
+          hash     : ""
         },
 
         location: {
@@ -81,19 +71,11 @@ export default function (test) {
         },
 
         origin : {
-          schema  : "http://www.google.com",
-          value   : "http://www.google.com",
-          isMatch : true
+          value : "http://www.google.com"
         },
 
         search : {
-          src     : {
-            schema : undefined,
-            value  : undefined
-          },
-          schema  : {},
-          keys    : [],
-          isMatch : true,
+          value : undefined
         },
 
         params : {
@@ -131,8 +113,7 @@ export default function (test) {
           origin   : "http://www.google.com",
           href     : "http://www.google.com/:x/:y",
           pathname : "/:x/:y",
-          hash     : "",
-          search   : ""
+          hash     : ""
         },
 
         location: {
@@ -144,19 +125,11 @@ export default function (test) {
         },
 
         origin : {
-          schema  : "http://www.google.com",
-          value   : "http://www.google.com",
-          isMatch : true
+          value : "http://www.google.com"
         },
 
         search : {
-          schema  : {},
-          keys    : [],
-          isMatch : true,
-          src : {
-            schema : undefined,
-            value  : undefined
-          }
+          value : undefined
         },
 
         params : {

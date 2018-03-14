@@ -4,56 +4,28 @@ export default function (test) {
   test("http://www.google.com/ (object.origin)")
     .this(function () {
       let l = new URL({ origin: "http://www.google.com/" });
-      console.log(JSON.stringify(l, null, "  "));
       return l;
     })
     .isDeepEqual(function () {
       return {
-        schema  : {
-          origin       : "http://www.google.com",
-          href         : "http://www.google.com/",
-          hash         : "",
-          pathname     : "/",
-          search       : "",
+        schema : {
+          origin   : "http://www.google.com",
+          href     : "http://www.google.com/",
+          pathname : "/",
+          hash     : ""
         },
-
-        location: {
-          origin       : undefined,
-          href         : undefined,
-          hash         : undefined,
-          pathname     : undefined,
-          search       : undefined,
-        },
-
-        origin   : {
-          schema  : "http://www.google.com",
-          value   : undefined,
-          isMatch : false
-        },
-
-        search  : {
-          src     : {
-            schema : undefined,
-            value  : undefined
-          },
-          schema  : {},
-          keys    : [],
-          isMatch : false
-        },
-
-        params  : {
+        location : {},
+        origin   : {},
+        search   : {},
+        params   : {
           schema  : [],
           value   : [],
           isMatch : true
         },
-
         hash : {
-          schema  : undefined,
-          value   : undefined,
           isMatch : true
         },
-
-        isMatch : false
+        isMatch : true
       };
     });
 
@@ -64,51 +36,24 @@ export default function (test) {
     })
     .isDeepEqual(function () {
       return {
-        schema  : {
-          origin       : "http://www.google.com",
-          href         : "http://www.google.com/",
-          hash         : "",
-          pathname     : "/",
-          search       : "",
+        schema : {
+          origin   : "http://www.google.com",
+          href     : "http://www.google.com/",
+          pathname : "/",
+          hash     : ""
         },
-
-        location: {
-          origin       : undefined,
-          href         : undefined,
-          hash         : undefined,
-          pathname     : undefined,
-          search       : undefined,
-        },
-
-        origin   : {
-          schema  : "http://www.google.com",
-          value   : undefined,
-          isMatch : false
-        },
-
-        search  : {
-          src     : {
-            schema : undefined,
-            value  : undefined
-          },
-          schema  : {},
-          keys    : [],
-          isMatch : false
-        },
-
-        params  : {
-          schema  : [],
-          value   : [],
+        location : {},
+        origin : {},
+        search : {},
+        params : {
+          schema : [],
+          value : [],
           isMatch : true
         },
-
         hash : {
-          schema  : undefined,
-          value   : undefined,
           isMatch : true
         },
-
-        isMatch : false
+        isMatch : true
       };
     });
 }

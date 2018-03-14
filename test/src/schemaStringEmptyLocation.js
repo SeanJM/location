@@ -12,46 +12,20 @@ export default function (test) {
           origin   : "http://www.google.com",
           href     : "http://www.google.com/",
           pathname : "/",
-          hash     : "",
-          search   : ""
+          hash     : ""
         },
-
-        location: {
-          origin   : undefined,
-          href     : undefined,
-          hash     : undefined,
-          pathname : undefined,
-          search   : undefined,
-        },
-
-        hash    : {
-          schema  : undefined,
-          value   : undefined,
-          isMatch : true
-        },
-
-        origin  : {
-          schema  : "http://www.google.com",
-          value   : undefined,
-          isMatch : false
-        },
-
-        search  : {
-          src     : {
-            schema : undefined
-          },
-          schema  : {},
-          keys    : [],
-          isMatch : false,
-        },
-
-        params  : {
+        location : {},
+        origin   : {},
+        search   : {},
+        params   : {
           schema  : [],
           value   : [],
           isMatch : true
         },
-
-        isMatch : false
+        hash : {
+          isMatch : true
+        },
+        isMatch : true
       };
     });
 }

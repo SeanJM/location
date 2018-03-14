@@ -11,10 +11,10 @@ module.exports = function (test) {
       return true;
     });
 
-  test("*?origin=user+:userID+:section+:page")
+  test("*")
     .this(function () {
       let l = new URL(
-        "*?origin=user+:userID+:section+:page",
+        "*",
         "http://www.domain.com/?origin=user+98fjhd+all+1"
       );
       return l;
@@ -23,10 +23,9 @@ module.exports = function (test) {
       return {
         schema: {
           origin   : "*",
-          href     : "*?origin=user+:userID+:section+:page",
+          href     : "*",
           pathname : "/",
-          hash     : "",
-          search   : "?origin=user+:userID+:section+:page"
+          hash     : ""
         },
         location: {
           origin   : "http://www.domain.com",
@@ -36,43 +35,10 @@ module.exports = function (test) {
           search   : "?origin=user+98fjhd+all+1"
         },
         origin: {
-          schema  : /.*?/,
-          value   : "http://www.domain.com",
-          isMatch : true
+          value : "http://www.domain.com"
         },
         search: {
-          isMatch : true,
-          schema  : {
-            origin: {
-              key       : "origin",
-              value     : "user+:userID+:section+:page",
-              delimiter : "+",
-              type      : "object",
-              map       : [{
-                type : "constant",
-                key  : "user"
-              }, {
-                type : "variable",
-                key  : "userID"
-              }, {
-                type : "variable",
-                key  : "section"
-              }, {
-                type : "variable",
-                key  : "page"
-              }]
-            }
-          },
-          src : {
-            schema : "?origin=user+:userID+:section+:page",
-            value  : "?origin=user+98fjhd+all+1"
-          },
-          keys: [ "origin" ],
-          origin: {
-            userID  : "98fjhd",
-            section : "all",
-            page    : 1
-          }
+          origin : "user+98fjhd+all+1"
         },
         params: {
           schema  : [],
@@ -102,8 +68,7 @@ module.exports = function (test) {
           origin   : "*",
           href     : "*/?origin=user+:userID+:section+:page",
           pathname : "/",
-          hash     : "",
-          search   : "?origin=user+:userID+:section+:page"
+          hash     : ""
         },
         location : {
           href     : "/post/p398dfjkj",
@@ -111,45 +76,9 @@ module.exports = function (test) {
           hash     : "",
           search   : "?origin=user+98fjhd+all+1"
         },
-        origin : {
-          schema  : {},
-          isMatch : true
-        },
+        origin : {},
         search : {
-          isMatch : true,
-          schema : {
-            origin : {
-              key : "origin",
-              value : "user+:userID+:section+:page",
-              delimiter : "+",
-              type : "object",
-              map : [{
-                type : "constant",
-                key  : "user"
-              }, {
-                type : "variable",
-                key  : "userID"
-              }, {
-                type : "variable",
-                key  : "section"
-              }, {
-                type : "variable",
-                key  : "page"
-              }]
-            }
-          },
-          src : {
-            schema : "?origin=user+:userID+:section+:page",
-            value  : "?origin=user+98fjhd+all+1"
-          },
-          keys : [
-            "origin"
-          ],
-          origin : {
-            userID  : "98fjhd",
-            section : "all",
-            page    : 1
-          }
+          origin : "user+98fjhd+all+1"
         },
         params : {
           schema : [],
@@ -179,8 +108,7 @@ module.exports = function (test) {
           origin   : undefined,
           href     : "/*/",
           pathname : "/*/",
-          hash     : "",
-          search   : ""
+          hash     : ""
         },
         location : {
           href     : "/post/p398dfjkj",
@@ -188,18 +116,9 @@ module.exports = function (test) {
           hash     : "",
           search   : ""
         },
-        origin : {
-          schema  : undefined,
-          isMatch : true
-        },
+        origin : {},
         search : {
-          isMatch : true,
-          schema  : {},
-          src     : {
-            schema : undefined,
-            value  : undefined
-          },
-          keys    : []
+          value : undefined
         },
         params : {
           schema : [{

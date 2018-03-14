@@ -8,29 +8,21 @@ module.exports = function (test) {
     })
     .isDeepEqual(function () {
       return {
-        "schema": {},
-        "location": {},
-        "origin": {
-          "isMatch": true
+        schema   : {},
+        location : {},
+        origin   : {},
+        search : {
+          value : undefined
         },
-        "search": {
-          "isMatch": false,
-          "schema": {},
-          "keys": [],
-          src : {
-            schema : undefined,
-            value : undefined
-          }
+        params : {
+          schema  : [],
+          value   : [],
+          isMatch : true
         },
-        "params": {
-          "schema": [],
-          "value": [],
-          "isMatch": true
+        hash : {
+          isMatch : true
         },
-        "hash": {
-          "isMatch": true
-        },
-        "isMatch": false
+        isMatch : true
       };
     });
 
@@ -41,29 +33,21 @@ module.exports = function (test) {
     })
     .isDeepEqual(function () {
       return {
-        "schema": {},
-        "location": {},
-        "origin": {
-          "isMatch": true
+        schema   : {},
+        location : {},
+        origin   : {},
+        search : {
+          value : undefined
         },
-        "search": {
-          "isMatch": false,
-          "schema": {},
-          "keys": [],
-          src : {
-            schema : undefined,
-            value  : undefined
-          }
+        params : {
+          schema  : [],
+          value   : [],
+          isMatch : true
         },
-        "params": {
-          "schema": [],
-          "value": [],
-          "isMatch": true
+        hash : {
+          isMatch : true
         },
-        "hash": {
-          "isMatch": true
-        },
-        "isMatch": false
+        isMatch : true
       };
     });
 

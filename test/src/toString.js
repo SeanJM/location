@@ -30,28 +30,16 @@ module.exports = function (test) {
       return "http://www.google.com/?search[]=3&search[]=2";
     });
 
-  test("http://www.google.com/?search[]=:number (toString)")
+  test("http://www.google.com/?search[]=1&search[]=2 (toString)")
     .this(function () {
-      let l = new URL("http://www.google.com/?search[]=:number", {
+      let l = new URL("http://www.google.com/", {
         href: "http://www.google.com/?search[]=1&search[]=2"
       });
-      l.search.search[0].number = 3;
+      l.search.search[0] = 3;
       return l.toString();
     })
     .isEqual(function () {
       return "http://www.google.com/?search[]=3&search[]=2";
-    });
-
-  test("http://www.google.com/?search[]=:name,:gender (toString)")
-    .this(function () {
-      let l = new URL("http://www.google.com/?search[]=:name,:gender", {
-        href: "http://www.google.com/?search[]=sean,male&search[]=sarah,female"
-      });
-      l.search.search[0].name = "John";
-      return l.toString();
-    })
-    .isEqual(function () {
-      return "http://www.google.com/?search[]=John,male&search[]=sarah,female";
     });
 
   test("/user/:userID (string HREF)")
@@ -84,30 +72,7 @@ module.exports = function (test) {
       return l.search.depth;
     })
     .isDeepEqual(function () {
-      return [{
-        number: 0,
-        id    : "o8jk"
-      }, {
-        number: 1,
-        id    : "99qE"
-      }, {
-        number: 2,
-        id    : "eBPs"
-      }];
-    });
-
-  test("/post/:postID?origin=... (manipulating a mapped object)")
-    .this(function () {
-      const l = new URL("/post/:postID?origin=board+:category+:page", {
-        pathname: "/post/ezAYhlkuGEz",
-        search  : "?origin=board+food+1"
-      });
-      l.search.origin.category = "fitness";
-      l.search.origin.board    = "unchanged";
-      return l.toString();
-    })
-    .isEqual(function () {
-      return "/post/ezAYhlkuGEz?origin=board+fitness+1";
+      return [ "0+o8jk", "1+99qE", "2+eBPs" ];
     });
 
   test("Empty")
@@ -160,33 +125,37 @@ module.exports = function (test) {
 
   test("http://localhost:3000/?string (set pathname)")
     .this(function () {
-      let url = new URL(null, {
-        href: "http://localhost:3000/?string"
-      });
+      try {
+        let url = new URL(null, {
+          href: "http://localhost:3000/?string"
+        });
 
-      url.set({
-        pathname : "/path/name"
-      });
+        url.set({
+          pathname : "/path/name"
+        });
 
-      return url.toString();
+        return url.toString();
+      } catch(e) {
+        console.log(e);
+      }
     })
     .isDeepEqual(function () {
       return "http://localhost:3000/path/name?string=1";
     });
 
-    test("http://localhost:3000/?string (set search)")
-      .this(function () {
-        let url = new URL(null, {
-          href: "http://localhost:3000/login"
-        });
-
-        url.set({
-          search : "?search=1&cat=fluffy&dog=sam"
-        });
-
-        return url.toString();
-      })
-      .isDeepEqual(function () {
-        return "http://localhost:3000/login?search=1&cat=fluffy&dog=sam";
+  test("http://localhost:3000/?string (set search)")
+    .this(function () {
+      let url = new URL(null, {
+        href: "http://localhost:3000/login"
       });
+
+      url.set({
+        search : "?search=1&cat=fluffy&dog=sam"
+      });
+
+      return url.toString();
+    })
+    .isDeepEqual(function () {
+      return "http://localhost:3000/login?search=1&cat=fluffy&dog=sam";
+    });
 };

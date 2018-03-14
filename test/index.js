@@ -192,46 +192,20 @@ exports.default = function (test) {
         origin: "http://www.google.com",
         href: "http://www.google.com/",
         pathname: "/",
-        hash: "",
-        search: ""
+        hash: ""
       },
-
-      location: {
-        origin: undefined,
-        href: undefined,
-        hash: undefined,
-        pathname: undefined,
-        search: undefined
-      },
-
-      hash: {
-        schema: undefined,
-        value: undefined,
-        isMatch: true
-      },
-
-      origin: {
-        schema: "http://www.google.com",
-        value: undefined,
-        isMatch: false
-      },
-
-      search: {
-        src: {
-          schema: undefined
-        },
-        schema: {},
-        keys: [],
-        isMatch: false
-      },
-
+      location: {},
+      origin: {},
+      search: {},
       params: {
         schema: [],
         value: [],
         isMatch: true
       },
-
-      isMatch: false
+      hash: {
+        isMatch: true
+      },
+      isMatch: true
     };
   });
 };
@@ -285,11 +259,11 @@ var URL = function () {
     this.setLocation(location || {});
 
     this.origin = new _Origin2.default(this.schema, this.location);
-    this.search = new _Search2.default(this.schema, this.location);
+    this.search = new _Search2.default(this.location);
     this.params = new _Parameters2.default(this.schema, this.location);
     this.hash = new _Hash2.default(this.schema, this.location);
 
-    this.isMatch = this.origin.isMatch && this.search.isMatch && this.params.isMatch && this.hash.isMatch;
+    this.isMatch = this.params.isMatch && this.hash.isMatch;
   }
 
   _createClass(URL, [{
@@ -316,8 +290,7 @@ var URL = function () {
         origin: this.getUrlOrigin(schema),
         href: this.getUrlHref(schema),
         pathname: this.getUrlPathname(schema),
-        hash: this.getUrlHash(schema),
-        search: this.getUrlSearch(schema)
+        hash: this.getUrlHash(schema)
       };
       return this;
     }
@@ -466,10 +439,10 @@ var URL = function () {
         this.location.params = this.getUrlPathname(this.getLocationString(x));
       }
 
-      this.origin = new _Origin2.default(this.location);
+      this.origin = new _Origin2.default(this.schema, this.location);
       this.search = new _Search2.default(this.location);
-      this.params = new _Parameters2.default(this.location);
-      this.hash = new _Hash2.default(this.location);
+      this.params = new _Parameters2.default(this.schema, this.location);
+      this.hash = new _Hash2.default(this.schema, this.location);
       this.isMatch = this.params.__isMatch;
 
       return this;
@@ -502,20 +475,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Origin = function () {
-  _createClass(Origin, [{
-    key: "toExpression",
-    value: function toExpression(str) {
-      return new RegExp(str.replace(/\*/g, ".*?"));
-    }
-  }]);
-
   function Origin(schema, location) {
     _classCallCheck(this, Origin);
 
-    this.schema = schema.origin && this.toExpression(schema.origin);
     this.value = location.origin;
-
-    this.isMatch = schema.origin ? this.schema.test(this.value) : location.origin === schema.origin;
   }
 
   _createClass(Origin, [{
@@ -550,226 +513,53 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var clear = __webpack_require__(1);
 
 var reserved = {
-  searchEach: true,
-  setSchema: true,
   setValue: true,
   toString: true,
   set: true,
-  get: true,
-  schema: true,
-  keys: true,
-  isMatch: true
+  get: true
 };
 
-function filterValue(str) {
-  var n = Number(str);
-  return isNaN(n) ? str : n;
-}
-
-// ?this=value&that[]=a&that[]=b
-// ?this=:key+:property
-
-function schemaArrayToString(key, value, schema) {
-  var t = [];
-
-  for (var i = 0, n = value.length; i < n; i++) {
-    t.push([encodeURI(key) + "[]="]);
-
-    for (var x in value[i]) {
-      t[i].push(value[i][x]);
-    }
-
-    t[i] = t[i][0] + encodeURI(t[i].slice(1).join(schema.delimiter));
-  }
-
-  return t.join("&");
-}
-
-function schemaObjectToString(key, value, schema) {
-  var temp = [key + "=", []];
-
-  value = value || {};
-
-  for (var i = 0, n = schema.map.length; i < n; i++) {
-    if (schema.map[i].type === "constant") {
-      temp[1].push(schema.map[i].key);
-    } else if (value[schema.map[i].key]) {
-      temp[1].push(value[schema.map[i].key]);
-    }
-  }
-
-  return encodeURI(temp[0] + temp[1].join("+"));
-}
-
 var Search = function () {
-  function Search(schema, location) {
+  function Search(location) {
     _classCallCheck(this, Search);
 
-    this.isMatch = typeof schema.search === "string" && typeof location.search === "string";
-
-    this.src = {
-      schema: schema.search || undefined,
-      value: location.search || undefined
-    };
-
-    this.schema = {};
-    this.keys = [];
-
-    this.setSchema(schema.search);
+    this.setValue(location.search);
   }
 
   _createClass(Search, [{
-    key: "searchEach",
-    value: function searchEach(raw, callback) {
-      if (raw) {
-        var str = raw[0] === "?" ? raw.slice(1) : raw;
-        var split = str.split("&").filter(function (a) {
-          return a.length;
-        });
-
-        for (var i = 0, n = split.length; i < n; i++) {
-          var element = split[i].split("=");
-          var isArray = element[0].slice(-2) === "[]";
-          var delimiter = false;
-
-          element[0] = decodeURI(element[0]);
-          element[1] = element[1] && decodeURI(element[1]);
-
-          if (reserved[element[0]]) {
-            throw new Error("Invalid name: " + element[0] + ", this is a reserved name");
-          }
-
-          if (element[1]) {
-            if (element[1].indexOf(",") > -1) {
-              delimiter = ",";
-            } else if (element[1].indexOf("+") > -1) {
-              delimiter = "+";
-            }
-          }
-
-          callback({
-            key: isArray ? element[0].slice(0, -2) : element[0],
-            value: element[1],
-            delimiter: delimiter,
-            type: isArray ? "array" : "object"
-          });
-        }
-      }
-    }
-  }, {
-    key: "setSchema",
-    value: function setSchema(schema) {
-      var _this = this;
-
-      this.src.schema = schema || undefined;
-
-      this.searchEach(schema, function (props) {
-        props.map = [];
-        if (props.delimiter) {
-          props.value.split(props.delimiter).forEach(function (name) {
-            if (name[0] === ":") {
-              props.map.push({
-                type: "variable",
-                key: name.substring(1)
-              });
-            } else {
-              props.map.push({
-                type: "constant",
-                key: name
-              });
-            }
-          });
-        } else if (props.value && props.value[0] === ":") {
-          props.map.push({
-            type: "variable",
-            key: props.value.substring(1)
-          });
-        }
-
-        if (_this.keys.indexOf(props.key) === -1) {
-          _this.keys.push(props.key);
-        }
-
-        props.value = filterValue(props.value);
-        _this.schema[props.key] = props;
-      });
-
-      if (this.src.value) {
-        this.setValue(this.src.value);
-      }
-
-      return this;
-    }
-  }, {
     key: "setValue",
     value: function setValue(search) {
-      var _this2 = this;
+      var parts = search ? search.split("?")[1].split("&") : [];
 
-      var array = {};
-      var object = [];
+      var i = -1;
+      var n = parts.length;
+      var t = [];
 
-      this.src.value = search || undefined;
-
-      this.searchEach(search, function (props) {
-        var ref = _this2.schema[props.key];
-        if (props.type === "array") {
-          if (!array[props.key]) {
-            array[props.key] = {
-              key: props.key,
-              delimiter: false,
-              list: []
-            };
-          }
-          if (props.delimiter) {
-            array[props.key].delimiter = props.delimiter;
-          }
-          array[props.key].list.push(props.value);
-        } else {
-          object.push(props);
+      for (var k in this) {
+        if (this.hasOwnProperty(k)) {
+          delete this[k];
         }
-        if (!ref) {
-          _this2.isMatch = false;
-        }
-      });
-
-      for (var k in array) {
-        array[k].list.forEach(function (value, pIndex) {
-          var ref = _this2.schema[array[k].key];
-          _this2[array[k].key] = _this2[array[k].key] || [];
-          if (ref && ref.map.length) {
-            if (ref.delimiter) {
-              value.split(array[k].delimiter).forEach(function (value, i) {
-                _this2[array[k].key][pIndex] = _this2[array[k].key][pIndex] || {};
-                _this2[array[k].key][pIndex][ref.map[i].key] = filterValue(value);
-              });
-            } else {
-              _this2[array[k].key][pIndex] = _this2[array[k].key][pIndex] || {};
-              _this2[array[k].key][pIndex][ref.map[0].key] = filterValue(value);
-            }
-          } else {
-            _this2[array[k].key].push(filterValue(value));
-          }
-        });
       }
 
-      object.forEach(function (props) {
-        var ref = _this2.schema[props.key];
-        _this2[props.key] = {};
-        if (ref) {
-          if (ref.delimiter) {
-            props.value.split(ref.delimiter).forEach(function (value, i) {
-              var element = ref.map[i];
-              if (element.type === "variable") {
-                _this2[props.key][element.key] = filterValue(value);
-              }
-            });
-          } else {
-            _this2[props.key][ref.map[0].key] = filterValue(props.value);
+      while (++i < n) {
+        t = parts[i].split("=");
+        t[1] = decodeURI(t[1] || "1");
+        if (t[0].substr(-2) === "[]") {
+          t[0] = t[0].substring(0, t[0].length - 2);
+          if (reserved[t[0]]) {
+            throw new Error("Invalid key \"" + t[0] + "\", this key is reserved.");
           }
+          if (!this[t[0]]) {
+            this[t[0]] = [];
+          }
+          this[t[0]].push(t[1]);
         } else {
-          _this2[props.key] = props.value ? filterValue(props.value) : 1;
+          if (reserved[t[0]]) {
+            throw new Error("Invalid key \"" + t[0] + "\", this key is reserved.");
+          }
+          this[t[0]] = t[1];
         }
-      });
+      }
     }
   }, {
     key: "toString",
@@ -777,22 +567,17 @@ var Search = function () {
       var search = [];
       for (var k in this) {
         if (this.hasOwnProperty(k) && !reserved[k]) {
-          if (this.schema[k] && this.schema[k].map.length) {
-            if (this.schema[k].type === "array") {
-              search.push(schemaArrayToString(k, this[k], this.schema[k]));
-            } else if (this.schema[k].type === "object") {
-              search.push(schemaObjectToString(k, this[k], this.schema[k]));
+          if (Array.isArray(this[k])) {
+            var x = -1;
+            var y = this[k].length;
+            while (++x < y) {
+              search.push(k + "[]=" + encodeURI(this[k][x]));
             }
-          } else if (typeof this[k] === "number" || typeof this[k] === "string" && this[k].length) {
-            search.push(encodeURI(k + "=" + this[k]));
-          } else if (Array.isArray(this[k])) {
-            for (var i = 0, n = this[k].length; i < n; i++) {
-              search.push(encodeURI(k) + "[]=" + encodeURI(this[k][i]));
-            }
+          } else {
+            search.push(k + "=" + encodeURI(this[k]));
           }
         }
       }
-
       return search.length ? "?" + search.join("&") : "";
     }
   }, {
@@ -1083,55 +868,27 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = function (test) {
   test("http://www.google.com/ (object.origin)").this(function () {
     var l = new _index2.default({ origin: "http://www.google.com/" });
-    console.log(JSON.stringify(l, null, "  "));
     return l;
   }).isDeepEqual(function () {
     return {
       schema: {
         origin: "http://www.google.com",
         href: "http://www.google.com/",
-        hash: "",
         pathname: "/",
-        search: ""
+        hash: ""
       },
-
-      location: {
-        origin: undefined,
-        href: undefined,
-        hash: undefined,
-        pathname: undefined,
-        search: undefined
-      },
-
-      origin: {
-        schema: "http://www.google.com",
-        value: undefined,
-        isMatch: false
-      },
-
-      search: {
-        src: {
-          schema: undefined,
-          value: undefined
-        },
-        schema: {},
-        keys: [],
-        isMatch: false
-      },
-
+      location: {},
+      origin: {},
+      search: {},
       params: {
         schema: [],
         value: [],
         isMatch: true
       },
-
       hash: {
-        schema: undefined,
-        value: undefined,
         isMatch: true
       },
-
-      isMatch: false
+      isMatch: true
     };
   });
 
@@ -1143,48 +900,21 @@ exports.default = function (test) {
       schema: {
         origin: "http://www.google.com",
         href: "http://www.google.com/",
-        hash: "",
         pathname: "/",
-        search: ""
+        hash: ""
       },
-
-      location: {
-        origin: undefined,
-        href: undefined,
-        hash: undefined,
-        pathname: undefined,
-        search: undefined
-      },
-
-      origin: {
-        schema: "http://www.google.com",
-        value: undefined,
-        isMatch: false
-      },
-
-      search: {
-        src: {
-          schema: undefined,
-          value: undefined
-        },
-        schema: {},
-        keys: [],
-        isMatch: false
-      },
-
+      location: {},
+      origin: {},
+      search: {},
       params: {
         schema: [],
         value: [],
         isMatch: true
       },
-
       hash: {
-        schema: undefined,
-        value: undefined,
         isMatch: true
       },
-
-      isMatch: false
+      isMatch: true
     };
   });
 };
@@ -1216,8 +946,7 @@ exports.default = function (test) {
         origin: "http://www.google.com",
         href: "http://www.google.com/:x",
         pathname: "/:x",
-        hash: "",
-        search: ""
+        hash: ""
       },
 
       location: {
@@ -1229,19 +958,11 @@ exports.default = function (test) {
       },
 
       origin: {
-        schema: "http://www.google.com",
-        value: "http://www.google.com",
-        isMatch: true
+        value: "http://www.google.com"
       },
 
       search: {
-        schema: {},
-        keys: [],
-        src: {
-          schema: undefined,
-          value: undefined
-        },
-        isMatch: true
+        value: undefined
       },
 
       params: {
@@ -1270,8 +991,7 @@ exports.default = function (test) {
         origin: "http://www.google.com",
         href: "http://www.google.com/:x/:y",
         pathname: "/:x/:y",
-        hash: "",
-        search: ""
+        hash: ""
       },
 
       location: {
@@ -1283,19 +1003,11 @@ exports.default = function (test) {
       },
 
       origin: {
-        schema: "http://www.google.com",
-        value: "http://www.google.com",
-        isMatch: true
+        value: "http://www.google.com"
       },
 
       search: {
-        src: {
-          schema: undefined,
-          value: undefined
-        },
-        schema: {},
-        keys: [],
-        isMatch: true
+        value: undefined
       },
 
       params: {
@@ -1331,8 +1043,7 @@ exports.default = function (test) {
         origin: "http://www.google.com",
         href: "http://www.google.com/:x/:y",
         pathname: "/:x/:y",
-        hash: "",
-        search: ""
+        hash: ""
       },
 
       location: {
@@ -1344,19 +1055,11 @@ exports.default = function (test) {
       },
 
       origin: {
-        schema: "http://www.google.com",
-        value: "http://www.google.com",
-        isMatch: true
+        value: "http://www.google.com"
       },
 
       search: {
-        schema: {},
-        keys: [],
-        isMatch: true,
-        src: {
-          schema: undefined,
-          value: undefined
-        }
+        value: undefined
       },
 
       params: {
@@ -1497,210 +1200,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 exports.default = function (test) {
-  test("http://www.google.com?search=1 (schema only)").this(function () {
-    var l = new _index2.default({ href: "http://www.google.com/?search=1" });
-    return l;
-  }).isDeepEqual(function () {
-    return {
-      schema: {
-        origin: "http://www.google.com",
-        href: "http://www.google.com/?search=1",
-        pathname: "/",
-        hash: "",
-        search: "?search=1"
-      },
-
-      location: {
-        origin: undefined,
-        href: undefined,
-        pathname: undefined,
-        hash: undefined,
-        search: undefined
-      },
-
-      origin: {
-        schema: "http://www.google.com",
-        value: undefined,
-        isMatch: false
-      },
-
-      search: {
-        schema: {
-          search: {
-            key: "search",
-            value: 1,
-            delimiter: false,
-            type: "object",
-            map: []
-          }
-        },
-        src: {
-          schema: "?search=1"
-        },
-        keys: ["search"],
-        isMatch: false
-      },
-
-      params: {
-        schema: [],
-        value: [],
-        isMatch: true
-      },
-
-      hash: {
-        schema: undefined,
-        value: undefined,
-        isMatch: true
-      },
-
-      isMatch: false
-    };
-  });
-
-  test("http://www.google.com?search=:number (schema only)").this(function () {
-    var l = new _index2.default("http://www.google.com/?search=:number");
-    return l;
-  }).isDeepEqual(function () {
-    return {
-      schema: {
-        origin: "http://www.google.com",
-        href: "http://www.google.com/?search=:number",
-        pathname: "/",
-        hash: "",
-        search: "?search=:number"
-      },
-
-      location: {
-        origin: undefined,
-        href: undefined,
-        pathname: undefined,
-        hash: undefined,
-        search: undefined
-      },
-
-      origin: {
-        schema: "http://www.google.com",
-        value: undefined,
-        isMatch: false
-      },
-
-      search: {
-        schema: {
-          search: {
-            key: "search",
-            value: ":number",
-            delimiter: false,
-            type: "object",
-            map: [{
-              type: "variable",
-              key: "number"
-            }]
-          }
-        },
-        src: {
-          schema: "?search=:number"
-        },
-        keys: ["search"],
-        isMatch: false
-      },
-
-      params: {
-        schema: [],
-        value: [],
-        isMatch: true
-      },
-
-      hash: {
-        schema: undefined,
-        value: undefined,
-        isMatch: true
-      },
-
-      isMatch: false
-    };
-  });
-
-  test("/post/:postID?origin=board+:category+:page").this(function () {
-    var l = new _index2.default("/post/:postID?origin=board+:category+:page", {
-      pathname: "/post/ezAYhlkuGEz",
-      search: "?origin=board+food+1"
-    });
-    return l;
-  }).isDeepEqual(function () {
-    return {
-      schema: {
-        origin: undefined,
-        href: "/post/:postID?origin=board+:category+:page",
-        pathname: "/post/:postID",
-        hash: "",
-        search: "?origin=board+:category+:page"
-      },
-      location: {
-        origin: undefined,
-        href: "/post/ezAYhlkuGEz",
-        pathname: "/post/ezAYhlkuGEz",
-        hash: "",
-        search: "?origin=board+food+1"
-      },
-      origin: {
-        schema: undefined,
-        value: undefined,
-        isMatch: true
-      },
-      search: {
-        isMatch: true,
-        schema: {
-          origin: {
-            key: "origin",
-            value: "board+:category+:page",
-            delimiter: "+",
-            type: "object",
-            map: [{
-              type: "constant",
-              key: "board"
-            }, {
-              type: "variable",
-              key: "category"
-            }, {
-              type: "variable",
-              key: "page"
-            }]
-          }
-        },
-        src: {
-          schema: "?origin=board+:category+:page",
-          value: "?origin=board+food+1"
-        },
-        keys: ["origin"],
-        origin: {
-          "category": "food",
-          "page": 1
-        }
-      },
-      params: {
-        schema: [{
-          type: "constant",
-          key: "post"
-        }, {
-          type: "variable",
-          key: "postID"
-        }],
-        value: ["post", "ezAYhlkuGEz"],
-        isMatch: true,
-        postID: "ezAYhlkuGEz"
-      },
-      hash: {
-        schema: undefined,
-        value: undefined,
-        isMatch: true
-      },
-      isMatch: true
-    };
-  });
-
   test("http://www.google.com?search[]").this(function () {
     var l = new _index2.default({
-      href: "http://www.google.com/?search[]"
+      href: "http://www.google.com/"
     }, {
       href: "http://www.google.com/?search[]=1&search[]=2"
     });
@@ -1709,10 +1211,9 @@ exports.default = function (test) {
     return {
       schema: {
         origin: "http://www.google.com",
-        href: "http://www.google.com/?search[]",
+        href: "http://www.google.com/",
         pathname: "/",
-        hash: "",
-        search: "?search[]"
+        hash: ""
       },
 
       location: {
@@ -1724,28 +1225,11 @@ exports.default = function (test) {
       },
 
       origin: {
-        schema: "http://www.google.com",
-        value: "http://www.google.com",
-        isMatch: true
+        value: "http://www.google.com"
       },
 
       search: {
-        schema: {
-          search: {
-            key: "search",
-            value: undefined,
-            delimiter: false,
-            type: "array",
-            map: []
-          }
-        },
-        src: {
-          schema: "?search[]",
-          value: "?search[]=1&search[]=2"
-        },
-        search: [1, 2],
-        keys: ["search"],
-        isMatch: true
+        search: ["1", "2"]
       },
 
       params: {
@@ -1773,8 +1257,7 @@ exports.default = function (test) {
         origin: "http://www.google.com",
         href: "http://www.google.com",
         pathname: "/",
-        hash: "",
-        search: ""
+        hash: ""
       },
 
       location: {
@@ -1786,288 +1269,11 @@ exports.default = function (test) {
       },
 
       origin: {
-        schema: "http://www.google.com",
-        value: "http://www.google.com",
-        isMatch: true
+        value: "http://www.google.com"
       },
 
       search: {
-        isMatch: false,
-        schema: {},
-        keys: [],
-        search: [1, 2],
-        src: {
-          schema: undefined,
-          value: "?search[]=1&search[]=2"
-        }
-      },
-
-      params: {
-        schema: [],
-        value: [],
-        isMatch: true
-      },
-
-      hash: {
-        schema: undefined,
-        value: undefined,
-        isMatch: true
-      },
-
-      isMatch: false
-    };
-  });
-
-  test("http://www.google.com/?search=:number").this(function () {
-    var l = new _index2.default("http://www.google.com/?search=:number", { href: "http://www.google.com/?search=1" });
-    return l;
-  }).isDeepEqual(function () {
-    return {
-      schema: {
-        origin: "http://www.google.com",
-        href: "http://www.google.com/?search=:number",
-        pathname: "/",
-        hash: "",
-        search: "?search=:number"
-      },
-
-      location: {
-        origin: "http://www.google.com",
-        href: "http://www.google.com/?search=1",
-        pathname: "/",
-        hash: "",
-        search: "?search=1"
-      },
-
-      origin: {
-        schema: "http://www.google.com",
-        value: "http://www.google.com",
-        isMatch: true
-      },
-
-      search: {
-        isMatch: true,
-        schema: {
-          search: {
-            key: "search",
-            value: ":number",
-            delimiter: false,
-            type: "object",
-            map: [{
-              type: "variable",
-              key: "number"
-            }]
-          }
-        },
-        src: {
-          schema: "?search=:number",
-          value: "?search=1"
-        },
-        keys: ["search"],
-        search: {
-          number: 1
-        }
-      },
-
-      params: {
-        schema: [],
-        value: [],
-        isMatch: true
-      },
-
-      hash: {
-        schema: undefined,
-        value: undefined,
-        isMatch: true
-      },
-
-      isMatch: true
-    };
-  });
-
-  test("http://www.google.com/?search[]=:number").this(function () {
-    var l = new _index2.default("http://www.google.com/?search[]=:number", { href: "http://www.google.com/?search[]=1&search[]=2" });
-    return l;
-  }).isDeepEqual(function () {
-    return {
-      schema: {
-        origin: "http://www.google.com",
-        href: "http://www.google.com/?search[]=:number",
-        pathname: "/",
-        hash: "",
-        search: "?search[]=:number"
-      },
-
-      location: {
-        origin: "http://www.google.com",
-        href: "http://www.google.com/?search[]=1&search[]=2",
-        pathname: "/",
-        hash: "",
-        search: "?search[]=1&search[]=2"
-      },
-
-      origin: {
-        schema: "http://www.google.com",
-        value: "http://www.google.com",
-        isMatch: true
-      },
-
-      search: {
-        isMatch: true,
-        schema: {
-          search: {
-            key: "search",
-            value: ":number",
-            delimiter: false,
-            type: "array",
-            map: [{
-              type: "variable",
-              key: "number"
-            }]
-          }
-        },
-        src: {
-          schema: "?search[]=:number",
-          value: "?search[]=1&search[]=2"
-        },
-        keys: ["search"],
-        search: [{ number: 1 }, { number: 2 }]
-      },
-
-      params: {
-        schema: [],
-        value: [],
-        isMatch: true
-      },
-
-      hash: {
-        schema: undefined,
-        value: undefined,
-        isMatch: true
-      },
-
-      isMatch: true
-    };
-  });
-
-  test("http://www.google.com/?person[]=:age+:gender").this(function () {
-    var l = new _index2.default("http://www.google.com/?person[]=:age+:gender", { href: "http://www.google.com/?person[]=1+male&person[]=2+female" });
-    return l;
-  }).isDeepEqual(function () {
-    return {
-      schema: {
-        origin: "http://www.google.com",
-        href: "http://www.google.com/?person[]=:age+:gender",
-        pathname: "/",
-        hash: "",
-        search: "?person[]=:age+:gender"
-      },
-
-      location: {
-        origin: "http://www.google.com",
-        href: "http://www.google.com/?person[]=1+male&person[]=2+female",
-        pathname: "/",
-        hash: "",
-        search: "?person[]=1+male&person[]=2+female"
-      },
-
-      origin: {
-        schema: "http://www.google.com",
-        value: "http://www.google.com",
-        isMatch: true
-      },
-
-      search: {
-        isMatch: true,
-        schema: {
-          person: {
-            key: "person",
-            value: ":age+:gender",
-            delimiter: "+",
-            type: "array",
-            map: [{
-              type: "variable",
-              key: "age"
-            }, {
-              type: "variable",
-              key: "gender"
-            }]
-          }
-        },
-        src: {
-          schema: "?person[]=:age+:gender",
-          value: "?person[]=1+male&person[]=2+female"
-        },
-        keys: ["person"],
-        person: [{ age: 1, gender: "male" }, { age: 2, gender: "female" }]
-      },
-
-      params: {
-        schema: [],
-        value: [],
-        isMatch: true
-      },
-
-      hash: {
-        schema: undefined,
-        value: undefined,
-        isMatch: true
-      },
-
-      isMatch: true
-    };
-  });
-
-  test("http://www.google.com/?person[]=:age+:gender (incomplete)").this(function () {
-    var l = new _index2.default("http://www.google.com/?person[]=:age+:gender", { href: "http://www.google.com/?person[]=1&person[]=2+female" });
-    return l;
-  }).isDeepEqual(function () {
-    return {
-      schema: {
-        origin: "http://www.google.com",
-        href: "http://www.google.com/?person[]=:age+:gender",
-        pathname: "/",
-        hash: "",
-        search: "?person[]=:age+:gender"
-      },
-
-      location: {
-        origin: "http://www.google.com",
-        href: "http://www.google.com/?person[]=1&person[]=2+female",
-        pathname: "/",
-        hash: "",
-        search: "?person[]=1&person[]=2+female"
-      },
-
-      origin: {
-        schema: "http://www.google.com",
-        value: "http://www.google.com",
-        isMatch: true
-      },
-
-      search: {
-        isMatch: true,
-        schema: {
-          person: {
-            key: "person",
-            value: ":age+:gender",
-            delimiter: "+",
-            type: "array",
-            map: [{
-              type: "variable",
-              key: "age"
-            }, {
-              type: "variable",
-              key: "gender"
-            }]
-          }
-        },
-        src: {
-          schema: "?person[]=:age+:gender",
-          value: "?person[]=1&person[]=2+female"
-        },
-        keys: ["person"],
-        person: [{ age: 1 }, { age: 2, gender: "female" }]
+        search: ["1", "2"]
       },
 
       params: {
@@ -2100,8 +1306,7 @@ exports.default = function (test) {
       schema: {
         href: "/insurance/receipts/all",
         pathname: "/insurance/receipts/all",
-        hash: "",
-        search: ""
+        hash: ""
       },
       location: {
         href: "/insurance/receipts/all?index=0&length=20",
@@ -2109,19 +1314,10 @@ exports.default = function (test) {
         hash: "",
         search: "?index=0&length=20"
       },
-      origin: {
-        isMatch: true
-      },
+      origin: {},
       search: {
-        isMatch: false,
-        schema: {},
-        keys: [],
-        index: 0,
-        length: 20,
-        src: {
-          schema: undefined,
-          value: "?index=0&length=20"
-        }
+        index: "0",
+        length: "20"
       },
       params: {
         schema: [{
@@ -2142,7 +1338,7 @@ exports.default = function (test) {
         value: undefined,
         isMatch: true
       },
-      isMatch: false
+      isMatch: true
     };
   });
 
@@ -2150,7 +1346,7 @@ exports.default = function (test) {
     var url = new _index2.default(null, "http://localhost:3000/login?reset");
     return url.search.reset;
   }).isDeepEqual(function () {
-    return 1;
+    return "1";
   });
 
   test("http://localhost:3000/?string (search get)").this(function () {
@@ -2199,18 +1395,10 @@ exports.default = function (test) {
         search: "?select=value"
       },
       origin: {
-        value: "http://localhost:3000",
-        isMatch: false
+        value: "http://localhost:3000"
       },
       search: {
-        isMatch: false,
-        schema: {},
-        keys: [],
-        select: "value",
-        src: {
-          schema: undefined,
-          value: "?select=value"
-        }
+        select: "value"
       },
       params: {
         schema: [],
@@ -2223,36 +1411,6 @@ exports.default = function (test) {
       },
       isMatch: false
     };
-  });
-
-  test("search 'setSchema'").this(function () {
-    var url = new _index2.default(null, {
-      href: "http://localhost:3000/?anything=tested"
-    });
-
-    url.search.setSchema("view=:id+:value").set({
-      view: {
-        id: "00982",
-        value: "cat"
-      }
-    });
-
-    return url.toString();
-  }).isDeepEqual(function () {
-    return "http://localhost:3000/?anything=tested&view=00982+cat";
-  });
-
-  test("search 'setSchema' new value").this(function () {
-    var url = new _index2.default(null, {
-      href: "/insurance/receipts/all?index=0&length=12&view=T504ATP07122+receipt"
-    });
-
-    url.search.setSchema("view=:id+:viewId");
-
-    url.search.view.id = "four";
-    return url.toString();
-  }).isDeepEqual(function () {
-    return "/insurance/receipts/all?index=0&length=12&view=four+receipt";
   });
 };
 
@@ -2299,24 +1457,14 @@ module.exports = function (test) {
     return "http://www.google.com/?search[]=3&search[]=2";
   });
 
-  test("http://www.google.com/?search[]=:number (toString)").this(function () {
-    var l = new _index2.default("http://www.google.com/?search[]=:number", {
+  test("http://www.google.com/?search[]=1&search[]=2 (toString)").this(function () {
+    var l = new _index2.default("http://www.google.com/", {
       href: "http://www.google.com/?search[]=1&search[]=2"
     });
-    l.search.search[0].number = 3;
+    l.search.search[0] = 3;
     return l.toString();
   }).isEqual(function () {
     return "http://www.google.com/?search[]=3&search[]=2";
-  });
-
-  test("http://www.google.com/?search[]=:name,:gender (toString)").this(function () {
-    var l = new _index2.default("http://www.google.com/?search[]=:name,:gender", {
-      href: "http://www.google.com/?search[]=sean,male&search[]=sarah,female"
-    });
-    l.search.search[0].name = "John";
-    return l.toString();
-  }).isEqual(function () {
-    return "http://www.google.com/?search[]=John,male&search[]=sarah,female";
   });
 
   test("/user/:userID (string HREF)").this(function () {
@@ -2340,28 +1488,7 @@ module.exports = function (test) {
     });
     return l.search.depth;
   }).isDeepEqual(function () {
-    return [{
-      number: 0,
-      id: "o8jk"
-    }, {
-      number: 1,
-      id: "99qE"
-    }, {
-      number: 2,
-      id: "eBPs"
-    }];
-  });
-
-  test("/post/:postID?origin=... (manipulating a mapped object)").this(function () {
-    var l = new _index2.default("/post/:postID?origin=board+:category+:page", {
-      pathname: "/post/ezAYhlkuGEz",
-      search: "?origin=board+food+1"
-    });
-    l.search.origin.category = "fitness";
-    l.search.origin.board = "unchanged";
-    return l.toString();
-  }).isEqual(function () {
-    return "/post/ezAYhlkuGEz?origin=board+fitness+1";
+    return ["0+o8jk", "1+99qE", "2+eBPs"];
   });
 
   test("Empty").this(function () {
@@ -2405,15 +1532,19 @@ module.exports = function (test) {
   });
 
   test("http://localhost:3000/?string (set pathname)").this(function () {
-    var url = new _index2.default(null, {
-      href: "http://localhost:3000/?string"
-    });
+    try {
+      var url = new _index2.default(null, {
+        href: "http://localhost:3000/?string"
+      });
 
-    url.set({
-      pathname: "/path/name"
-    });
+      url.set({
+        pathname: "/path/name"
+      });
 
-    return url.toString();
+      return url.toString();
+    } catch (e) {
+      console.log(e);
+    }
   }).isDeepEqual(function () {
     return "http://localhost:3000/path/name?string=1";
   });
@@ -2455,17 +1586,16 @@ module.exports = function (test) {
     return true;
   });
 
-  test("*?origin=user+:userID+:section+:page").this(function () {
-    var l = new _index2.default("*?origin=user+:userID+:section+:page", "http://www.domain.com/?origin=user+98fjhd+all+1");
+  test("*").this(function () {
+    var l = new _index2.default("*", "http://www.domain.com/?origin=user+98fjhd+all+1");
     return l;
   }).isDeepEqual(function () {
     return {
       schema: {
         origin: "*",
-        href: "*?origin=user+:userID+:section+:page",
+        href: "*",
         pathname: "/",
-        hash: "",
-        search: "?origin=user+:userID+:section+:page"
+        hash: ""
       },
       location: {
         origin: "http://www.domain.com",
@@ -2475,43 +1605,10 @@ module.exports = function (test) {
         search: "?origin=user+98fjhd+all+1"
       },
       origin: {
-        schema: /.*?/,
-        value: "http://www.domain.com",
-        isMatch: true
+        value: "http://www.domain.com"
       },
       search: {
-        isMatch: true,
-        schema: {
-          origin: {
-            key: "origin",
-            value: "user+:userID+:section+:page",
-            delimiter: "+",
-            type: "object",
-            map: [{
-              type: "constant",
-              key: "user"
-            }, {
-              type: "variable",
-              key: "userID"
-            }, {
-              type: "variable",
-              key: "section"
-            }, {
-              type: "variable",
-              key: "page"
-            }]
-          }
-        },
-        src: {
-          schema: "?origin=user+:userID+:section+:page",
-          value: "?origin=user+98fjhd+all+1"
-        },
-        keys: ["origin"],
-        origin: {
-          userID: "98fjhd",
-          section: "all",
-          page: 1
-        }
+        origin: "user+98fjhd+all+1"
       },
       params: {
         schema: [],
@@ -2539,8 +1636,7 @@ module.exports = function (test) {
         origin: "*",
         href: "*/?origin=user+:userID+:section+:page",
         pathname: "/",
-        hash: "",
-        search: "?origin=user+:userID+:section+:page"
+        hash: ""
       },
       location: {
         href: "/post/p398dfjkj",
@@ -2548,43 +1644,9 @@ module.exports = function (test) {
         hash: "",
         search: "?origin=user+98fjhd+all+1"
       },
-      origin: {
-        schema: {},
-        isMatch: true
-      },
+      origin: {},
       search: {
-        isMatch: true,
-        schema: {
-          origin: {
-            key: "origin",
-            value: "user+:userID+:section+:page",
-            delimiter: "+",
-            type: "object",
-            map: [{
-              type: "constant",
-              key: "user"
-            }, {
-              type: "variable",
-              key: "userID"
-            }, {
-              type: "variable",
-              key: "section"
-            }, {
-              type: "variable",
-              key: "page"
-            }]
-          }
-        },
-        src: {
-          schema: "?origin=user+:userID+:section+:page",
-          value: "?origin=user+98fjhd+all+1"
-        },
-        keys: ["origin"],
-        origin: {
-          userID: "98fjhd",
-          section: "all",
-          page: 1
-        }
+        origin: "user+98fjhd+all+1"
       },
       params: {
         schema: [],
@@ -2609,8 +1671,7 @@ module.exports = function (test) {
         origin: undefined,
         href: "/*/",
         pathname: "/*/",
-        hash: "",
-        search: ""
+        hash: ""
       },
       location: {
         href: "/post/p398dfjkj",
@@ -2618,18 +1679,9 @@ module.exports = function (test) {
         hash: "",
         search: ""
       },
-      origin: {
-        schema: undefined,
-        isMatch: true
-      },
+      origin: {},
       search: {
-        isMatch: true,
-        schema: {},
-        src: {
-          schema: undefined,
-          value: undefined
-        },
-        keys: []
+        value: undefined
       },
       params: {
         schema: [{
@@ -2682,17 +1734,10 @@ module.exports = function (test) {
         search: ""
       },
       origin: {
-        value: "http://localhost:3001",
-        isMatch: false
+        value: "http://localhost:3001"
       },
       search: {
-        isMatch: false,
-        schema: {},
-        keys: [],
-        src: {
-          schema: undefined,
-          value: undefined
-        }
+        value: undefined
       },
       params: {
         schema: [],
@@ -2783,29 +1828,21 @@ module.exports = function (test) {
     return l;
   }).isDeepEqual(function () {
     return {
-      "schema": {},
-      "location": {},
-      "origin": {
-        "isMatch": true
+      schema: {},
+      location: {},
+      origin: {},
+      search: {
+        value: undefined
       },
-      "search": {
-        "isMatch": false,
-        "schema": {},
-        "keys": [],
-        src: {
-          schema: undefined,
-          value: undefined
-        }
+      params: {
+        schema: [],
+        value: [],
+        isMatch: true
       },
-      "params": {
-        "schema": [],
-        "value": [],
-        "isMatch": true
+      hash: {
+        isMatch: true
       },
-      "hash": {
-        "isMatch": true
-      },
-      "isMatch": false
+      isMatch: true
     };
   });
 
@@ -2814,29 +1851,21 @@ module.exports = function (test) {
     return l;
   }).isDeepEqual(function () {
     return {
-      "schema": {},
-      "location": {},
-      "origin": {
-        "isMatch": true
+      schema: {},
+      location: {},
+      origin: {},
+      search: {
+        value: undefined
       },
-      "search": {
-        "isMatch": false,
-        "schema": {},
-        "keys": [],
-        src: {
-          schema: undefined,
-          value: undefined
-        }
+      params: {
+        schema: [],
+        value: [],
+        isMatch: true
       },
-      "params": {
-        "schema": [],
-        "value": [],
-        "isMatch": true
+      hash: {
+        isMatch: true
       },
-      "hash": {
-        "isMatch": true
-      },
-      "isMatch": false
+      isMatch: true
     };
   });
 

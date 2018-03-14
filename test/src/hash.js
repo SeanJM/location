@@ -19,17 +19,10 @@ module.exports = function (test) {
           search   : ""
         },
         origin : {
-          value   : "http://localhost:3001",
-          isMatch : false
+          value : "http://localhost:3001"
         },
         search : {
-          isMatch : false,
-          schema  : {},
-          keys    : [],
-          src     : {
-            schema : undefined,
-            value  : undefined
-          }
+          value : undefined,
         },
         params : {
           schema  : [],

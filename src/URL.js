@@ -9,13 +9,11 @@ export default class URL {
     this.setLocation(location || {});
 
     this.origin = new Origin(this.schema, this.location);
-    this.search = new Search(this.schema, this.location);
+    this.search = new Search(this.location);
     this.params = new Parameters(this.schema, this.location);
     this.hash   = new Hash(this.schema, this.location);
 
     this.isMatch = (
-      this.origin.isMatch &&
-      this.search.isMatch &&
       this.params.isMatch &&
       this.hash.isMatch
     );
@@ -41,8 +39,7 @@ export default class URL {
       origin   : this.getUrlOrigin(schema),
       href     : this.getUrlHref(schema),
       pathname : this.getUrlPathname(schema),
-      hash     : this.getUrlHash(schema),
-      search   : this.getUrlSearch(schema)
+      hash     : this.getUrlHash(schema)
     };
     return this;
   }
@@ -206,10 +203,10 @@ export default class URL {
       );
     }
 
-    this.origin  = new Origin(this.location);
+    this.origin  = new Origin(this.schema, this.location);
     this.search  = new Search(this.location);
-    this.params  = new Parameters(this.location);
-    this.hash    = new Hash(this.location);
+    this.params  = new Parameters(this.schema, this.location);
+    this.hash    = new Hash(this.schema, this.location);
     this.isMatch = this.params.__isMatch;
 
     return this;
