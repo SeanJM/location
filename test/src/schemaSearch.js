@@ -4,7 +4,7 @@ export default function (test) {
   test("http://www.google.com?search[]")
     .this(function () {
       let l = new URL({
-        href : "http://www.google.com/"
+        href: "http://www.google.com/"
       }, {
         href: "http://www.google.com/?search[]=1&search[]=2"
       });
@@ -12,42 +12,42 @@ export default function (test) {
     })
     .isDeepEqual(function () {
       return {
-        schema : {
-          origin   : "http://www.google.com",
-          href     : "http://www.google.com/",
-          pathname : "/",
-          hash     : ""
+        schema: {
+          origin: "http://www.google.com",
+          href: "http://www.google.com/",
+          pathname: "/",
+          hash: ""
         },
 
-        location : {
-          origin   : "http://www.google.com",
-          href     : "http://www.google.com/?search[]=1&search[]=2",
-          pathname : "/",
-          hash     : "",
-          search   : "?search[]=1&search[]=2"
+        location: {
+          origin: "http://www.google.com",
+          href: "http://www.google.com/?search[]=1&search[]=2",
+          pathname: "/",
+          hash: "",
+          search: "?search[]=1&search[]=2"
         },
 
-        origin : {
-          value : "http://www.google.com"
+        origin: {
+          value: "http://www.google.com"
         },
 
-        search : {
-          search : [ "1", "2" ]
+        search: {
+          search: [1, 2]
         },
 
-        params : {
-          schema  : [],
-          value   : [],
-          isMatch : true
+        params: {
+          schema: [],
+          value: [],
+          isMatch: true
         },
 
-        hash : {
-          schema  : undefined,
-          value   : undefined,
-          isMatch : true
+        hash: {
+          schema: undefined,
+          value: undefined,
+          isMatch: true
         },
 
-        isMatch : true
+        isMatch: true
       };
     });
 
@@ -61,98 +61,98 @@ export default function (test) {
     })
     .isDeepEqual(function () {
       return {
-        schema : {
-          origin   : "http://www.google.com",
-          href     : "http://www.google.com",
-          pathname : "/",
-          hash     : ""
+        schema: {
+          origin: "http://www.google.com",
+          href: "http://www.google.com",
+          pathname: "/",
+          hash: ""
         },
 
-        location : {
-          origin   : "http://www.google.com",
-          href     : "http://www.google.com/?search[]=1&search[]=2",
-          pathname : "/",
-          hash     : "",
-          search   : "?search[]=1&search[]=2"
+        location: {
+          origin: "http://www.google.com",
+          href: "http://www.google.com/?search[]=1&search[]=2",
+          pathname: "/",
+          hash: "",
+          search: "?search[]=1&search[]=2"
         },
 
-        origin : {
-          value : "http://www.google.com"
+        origin: {
+          value: "http://www.google.com"
         },
 
-        search : {
-          search : [ "1", "2" ]
+        search: {
+          search: [1, 2]
         },
 
-        params : {
-          schema  : [],
-          value   : [],
-          isMatch : true
+        params: {
+          schema: [],
+          value: [],
+          isMatch: true
         },
 
         hash: {
-          schema  : undefined,
-          value   : undefined,
-          isMatch : true
+          schema: undefined,
+          value: undefined,
+          isMatch: true
         },
 
-        isMatch : true
+        isMatch: true
       };
     });
 
   test("Incorrectly formatted location object (React Router)")
     .this(function () {
       let url = new URL("/insurance/receipts/all", {
-        origin   : undefined,
-        href     : "/insurance/receipts/all",
-        pathname : "/insurance/receipts/all",
-        hash     : "",
-        search   : "?index=0&length=20"
+        origin: undefined,
+        href: "/insurance/receipts/all",
+        pathname: "/insurance/receipts/all",
+        hash: "",
+        search: "?index=0&length=20"
       });
       return url;
     })
     .isDeepEqual(function () {
       return {
         schema: {
-          href     : "/insurance/receipts/all",
-          pathname : "/insurance/receipts/all",
-          hash     : ""
+          href: "/insurance/receipts/all",
+          pathname: "/insurance/receipts/all",
+          hash: ""
         },
-        location : {
-          href : "/insurance/receipts/all?index=0&length=20",
-          pathname : "/insurance/receipts/all",
-          hash : "",
-          search : "?index=0&length=20"
+        location: {
+          href: "/insurance/receipts/all?index=0&length=20",
+          pathname: "/insurance/receipts/all",
+          hash: "",
+          search: "?index=0&length=20"
         },
         origin: {},
-        search : {
-          index  : "0",
-          length : "20"
+        search: {
+          index: 0,
+          length: 20
         },
         params: {
           schema: [{
-            type : "constant",
-            key  : "insurance"
+            type: "constant",
+            key: "insurance"
           }, {
-            type : "constant",
-            key  : "receipts"
+            type: "constant",
+            key: "receipts"
           }, {
-            type : "constant",
-            key  : "all"
+            type: "constant",
+            key: "all"
           }],
-          value : [
+          value: [
             "insurance",
             "receipts",
             "all"
           ],
-          isMatch : true
+          isMatch: true
         },
-        hash : {
-          schema  : undefined,
-          value   : undefined,
-          isMatch : true
+        hash: {
+          schema: undefined,
+          value: undefined,
+          isMatch: true
         },
-        isMatch : true
+        isMatch: true
       };
     });
 
@@ -162,7 +162,7 @@ export default function (test) {
       return url.search.reset;
     })
     .isDeepEqual(function () {
-      return "1";
+      return 1;
     });
 
   test("http://localhost:3000/?string (search get)")
@@ -185,16 +185,16 @@ export default function (test) {
       });
 
       url.search.assign({
-        string : "this will be an encoded string",
-        number : 2098
+        string: "this will be an encoded string",
+        number: 2098
       });
 
-      return url.search.get([ "string", "number" ]);
+      return url.search.get(["string", "number"]);
     })
     .isDeepEqual(function () {
       return {
-        string : "this will be an encoded string",
-        number : 2098
+        string: "this will be an encoded string",
+        number: 2098
       };
     });
 
@@ -208,30 +208,30 @@ export default function (test) {
     })
     .isDeepEqual(function () {
       return {
-        schema : {},
-        location : {
-          origin   : "http://localhost:3000",
-          href     : "http://localhost:3000/?select=value#hash",
-          pathname : "/",
-          hash     : "#hash",
-          search   : "?select=value"
+        schema: {},
+        location: {
+          origin: "http://localhost:3000",
+          href: "http://localhost:3000/?select=value#hash",
+          pathname: "/",
+          hash: "#hash",
+          search: "?select=value"
         },
-        origin : {
-          value : "http://localhost:3000"
+        origin: {
+          value: "http://localhost:3000"
         },
-        search : {
-          select : "value"
+        search: {
+          select: "value"
         },
-        params : {
-          schema  : [],
-          value   : [],
-          isMatch : true
+        params: {
+          schema: [],
+          value: [],
+          isMatch: true
         },
-        hash : {
-          value   : "#hash",
-          isMatch : false
+        hash: {
+          value: "#hash",
+          isMatch: false
         },
-        isMatch : false
+        isMatch: false
       };
     });
 }

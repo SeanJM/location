@@ -1,8 +1,8 @@
 const reserved = {
-  setValue : true,
-  toString : true,
-  set      : true,
-  get      : true
+  setValue: true,
+  toString: true,
+  set: true,
+  get: true
 };
 
 function Search(location) {
@@ -36,8 +36,12 @@ Search.prototype.set = function (search) {
   }
 
   while (++i < n) {
-    t    = parts[i].split("=");
+    t = parts[i].split("=");
     t[1] = decodeURI(t[1] || "1");
+    t[1] = /^[0-9]+$/.test(t[1])
+      ? Number(t[1])
+      : t[1];
+
     if (t[0].substr(-2) === "[]") {
       t[0] = t[0].substring(0, t[0].length - 2);
       if (reserved[t[0]]) {

@@ -522,6 +522,8 @@ Search.prototype.set = function (search) {
   while (++i < n) {
     t = parts[i].split("=");
     t[1] = decodeURI(t[1] || "1");
+    t[1] = /^[0-9]+$/.test(t[1]) ? Number(t[1]) : t[1];
+
     if (t[0].substr(-2) === "[]") {
       t[0] = t[0].substring(0, t[0].length - 2);
       if (reserved[t[0]]) {
@@ -1217,7 +1219,7 @@ exports.default = function (test) {
       },
 
       search: {
-        search: ["1", "2"]
+        search: [1, 2]
       },
 
       params: {
@@ -1261,7 +1263,7 @@ exports.default = function (test) {
       },
 
       search: {
-        search: ["1", "2"]
+        search: [1, 2]
       },
 
       params: {
@@ -1304,8 +1306,8 @@ exports.default = function (test) {
       },
       origin: {},
       search: {
-        index: "0",
-        length: "20"
+        index: 0,
+        length: 20
       },
       params: {
         schema: [{
@@ -1334,7 +1336,7 @@ exports.default = function (test) {
     var url = new _index2.default(null, "http://localhost:3000/login?reset");
     return url.search.reset;
   }).isDeepEqual(function () {
-    return "1";
+    return 1;
   });
 
   test("http://localhost:3000/?string (search get)").this(function () {
